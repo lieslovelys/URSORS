@@ -72,6 +72,26 @@ create approved accounts directly.
 7. **Stay updated:** Check notifications, visit profiles, and view the ranking
    board. Teachers and administrators can moderate posts when necessary.
 
+## A simple experience on phones and computers
+
+Every screen uses the same labeled menu: **Home, Subjects, Notifications,
+Ranking, Profile, Help, and Logout**. Administrators also have **Admin**.
+On a phone, choose **Menu** to open these links. The current page is highlighted.
+
+Home offers **Browse Subjects**, **See My Posts**, **Notifications**, and
+**Ranking**, plus a Quick Guide you can hide. Subject cards explain each step,
+and breadcrumbs let you go back without starting over. Posts, comments,
+uploads, approvals, and other actions show a clear result message.
+
+Forms have visible labels, password show/hide controls, and friendly hints.
+Photos can be previewed before saving. Admin account lists use readable cards,
+not wide tables. Destructive actions ask for confirmation with **Yes, continue**
+and **Cancel**. The logo and blue brand color are retained.
+
+See the [simple User Guide](docs/USER_GUIDE.md) or open **Help** inside the site.
+The [redesign summary](docs/UX_REDESIGN.md) explains each page's before/after
+changes and the remaining product decisions.
+
 ## Technology and project organization
 
 The application uses **PHP 8.3**, **MariaDB**, **HTML**, **CSS**, and
@@ -84,10 +104,12 @@ in `comments`, reactions in `likes`, and updates in `notifications`.
 
 | Location | Contents |
 |---|---|
-| Root PHP and HTML files | Login, registration, feeds, course navigation, profiles, and admin pages |
+| Root PHP files | Small route entry points and protected action handlers |
+| Root HTML files | Compatibility redirects for older bookmarks |
+| `router.php` | Friendly 404 pages, old-link redirects, protected support folders, and authenticated downloads |
 | `config.php` | Shared database connection settings |
-| `includes/` | Shared session, authorization, registration, upload, and subject-routing helpers |
-| `assets/` | Active styles and images |
+| `includes/` | Shared bootstrap, layout, views, flash messages, CSRF, authorization, registration, uploads, and subject catalogue |
+| `assets/` | One main stylesheet (`css/app.css`), shared behavior (`js/app.js`), and brand images |
 | `uploads/` | Uploaded profile images, cover photos, and attachments; excluded from git |
 | `Database/` | Original SQL export and non-destructive migrations |
 | `scripts/` | Project checks, integration tests, and the CLI admin-password tool |
@@ -112,7 +134,9 @@ pnpm dev
 
 Open forwarded port **8000** (or `http://localhost:8000`). `pnpm dev` uses
 `/usr/bin/php8.3`; the default `php` binary lacks mysqli in this environment.
-If port 8000 is already running, use that server rather than starting a second.
+If an older server is already running, stop it and restart `pnpm dev` so it uses
+the new `router.php`. Do not start a second server on the same port. The router
+is required for friendly missing-page responses and protected support folders.
 
 Database settings are only in `config.php`: `localhost`, database `urs_sors`,
 user `root`, empty password. The existing database has already been migrated.
@@ -123,15 +147,30 @@ mariadb -uroot urs_sors < Database/migrations/001_preserve_content.sql
 ```
 
 **Do not reimport `Database/urs_sors.sql` over an existing database.**
-The development server needs write access to `uploads/`; subfolders are
-created automatically. Uploads and local database changes are not stored in git.
+The development server needs write access to `uploads/` and `var/log/`;
+subfolders are created automatically. Uploads and local database changes are
+not stored in git. Each file can be up to **10 MB**; the dev command sets PHP's
+upload limits to match. Raw PHP errors are hidden; details are logged in
+`var/log/app.log` (excluded from git and blocked by the router).
+
+The UX redesign requires **no new migration, columns, or tables**. The migration
+above belongs to the earlier technical repair, not this redesign.
 
 ## Checks
 
 ```bash
 pnpm test
-# Opt-in integration checks create labelled data and disable test users afterward.
+# Opt-in curl checks create labelled data; users are disabled and posts archived afterward.
 ADMIN_PASSWORD='your current admin password' pnpm test:integration
+
+# Optional real-browser checks (desktop and 360px mobile).
+python3 -m pip install --user -r requirements-dev.txt
+python3 -m playwright install --with-deps chromium
+ADMIN_PASSWORD='your current admin password' WITH_BROWSER=1 pnpm test:integration
+
+# Optional automated accessibility checks; download axe-core only for testing.
+curl -fsSL https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.10.3/axe.min.js -o /tmp/opencode/axe.min.js
+AXE_SCRIPT=/tmp/opencode/axe.min.js ADMIN_PASSWORD='your current admin password' python3 scripts/accessibility_check.py
 ```
 
 To change the existing admin password without committing it:
@@ -141,4 +180,11 @@ ADMIN_PASSWORD='your chosen password' /usr/bin/php8.3 scripts/set_admin_password
 ```
 
 See [project map](docs/PROJECT_MAP.md), [repair summary](docs/REPAIR_SUMMARY.md),
-and [test results](docs/TEST_RESULTS.md).
+and [UX test results](docs/UX_TEST_RESULTS.md). The earlier
+[technical test report](docs/TEST_RESULTS.md) is retained as historical context.
+
+All state-changing forms, including login, registration, and logout, require a
+session-bound CSRF token. Older custom API clients must first obtain a token
+from a page in the same session and send it as `csrf_token` or `X-CSRF-Token`.
+Logout is now POST-only. Notification read state changes only when the user
+chooses **Mark all as read**, not simply by opening the page.

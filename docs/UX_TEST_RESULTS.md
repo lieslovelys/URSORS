@@ -1,8 +1,8 @@
 # UX integration results
 
-Passed 1071 recorded curl requests on `http://localhost:8000`. All 89 subjects checked for all three roles.
+Passed 1073 recorded curl requests on `http://localhost:8000`. All 89 subjects checked for all three roles.
 
-Fixture prefix: `ux_1793511748170244568`. All test accounts disabled; new test posts archived; rows/files retained. No schema changes. Admin image references restored.
+Fixture prefix: `ux_1793512856877286716`. All test accounts disabled; new test posts archived; rows/files retained. No schema changes. Admin image references restored.
 
 No new entries in `var/log/app.log`. CSRF rejection, approval changes, role checks, uploads, read state, moderation, prepared queries and JSON compatibility checked.
 
@@ -74,18 +74,18 @@ student: teacher_feed.php -> 200
 student: upload_cover.php -> 405
 student: upload_profile.php -> 405
 student: welcome.php -> 200
-student: post_actions.php -> 403
-student: delete_post.php -> 403
-student: upload_cover.php -> 403
-student: add_post.php -> 403
-student: add_comment.php -> 403
-student: post_handler.php -> 403
-student: upload_profile.php -> 403
-student: newsfeed_post.php -> 403
 student: delete_comment.php -> 403
 student: logout.php -> 403
+student: upload_profile.php -> 403
+student: post_actions.php -> 403
+student: post_handler.php -> 403
+student: delete_post.php -> 403
 student: like.php -> 403
 student: comment.php -> 403
+student: upload_cover.php -> 403
+student: add_comment.php -> 403
+student: newsfeed_post.php -> 403
+student: add_post.php -> 403
 student: cpe_subject_class_page.html -> 302
 student: ce_subject_class_page.html -> 302
 student: cpe_elect.html -> 302
@@ -138,18 +138,18 @@ teacher: teacher_feed.php -> 200
 teacher: upload_cover.php -> 405
 teacher: upload_profile.php -> 405
 teacher: welcome.php -> 200
-teacher: post_actions.php -> 403
-teacher: delete_post.php -> 403
-teacher: upload_cover.php -> 403
-teacher: add_post.php -> 403
-teacher: add_comment.php -> 403
-teacher: post_handler.php -> 403
-teacher: upload_profile.php -> 403
-teacher: newsfeed_post.php -> 403
 teacher: delete_comment.php -> 403
 teacher: logout.php -> 403
+teacher: upload_profile.php -> 403
+teacher: post_actions.php -> 403
+teacher: post_handler.php -> 403
+teacher: delete_post.php -> 403
 teacher: like.php -> 403
 teacher: comment.php -> 403
+teacher: upload_cover.php -> 403
+teacher: add_comment.php -> 403
+teacher: newsfeed_post.php -> 403
+teacher: add_post.php -> 403
 teacher: cpe_subject_class_page.html -> 302
 teacher: ce_subject_class_page.html -> 302
 teacher: cpe_elect.html -> 302
@@ -202,18 +202,18 @@ admin: teacher_feed.php -> 200
 admin: upload_cover.php -> 405
 admin: upload_profile.php -> 405
 admin: welcome.php -> 200
-admin: post_actions.php -> 403
-admin: delete_post.php -> 403
-admin: upload_cover.php -> 403
-admin: add_post.php -> 403
-admin: add_comment.php -> 403
-admin: post_handler.php -> 403
-admin: upload_profile.php -> 403
-admin: newsfeed_post.php -> 403
 admin: delete_comment.php -> 403
 admin: logout.php -> 403
+admin: upload_profile.php -> 403
+admin: post_actions.php -> 403
+admin: post_handler.php -> 403
+admin: delete_post.php -> 403
 admin: like.php -> 403
 admin: comment.php -> 403
+admin: upload_cover.php -> 403
+admin: add_comment.php -> 403
+admin: newsfeed_post.php -> 403
+admin: add_post.php -> 403
 admin: cpe_subject_class_page.html -> 302
 admin: ce_subject_class_page.html -> 302
 admin: cpe_elect.html -> 302
@@ -1037,6 +1037,8 @@ admin: course_page.php?course=invalid&subject=invalid -> 404
 admin: course_page.php?course=cpe_core&subject=invalid -> 404
 student: post_handler.php -> 302
 student: post_handler.php -> 403
+student: post_handler.php -> 403
+student: post_handler.php -> 400
 teacher: post_handler.php -> 302
 teacher: post_handler.php -> 400
 teacher: add_comment.php -> 302
@@ -1048,7 +1050,7 @@ student: notifications.php -> 200
 student: notifications.php -> 302
 student: post_actions.php -> 403
 teacher: post_actions.php -> 302
-student: feed.php?post_id=91 -> 404
+student: feed.php?post_id=112 -> 404
 admin: post_actions.php -> 302
 student: delete_comment.php -> 403
 teacher: delete_comment.php -> 302
@@ -1057,19 +1059,19 @@ admin: post_actions.php -> 302
 student: upload_profile.php -> 302
 student: upload_cover.php -> 302
 student: profile.php -> 200
-student: profile.php?user_id=46 -> 200
+student: profile.php?user_id=58 -> 200
 student: search.php?query=UX -> 200
 student: ranking_board.php -> 200
 teacher: upload_profile.php -> 302
 teacher: upload_cover.php -> 302
 teacher: profile.php -> 200
-teacher: profile.php?user_id=46 -> 200
+teacher: profile.php?user_id=58 -> 200
 teacher: search.php?query=UX -> 200
 teacher: ranking_board.php -> 200
 admin: upload_profile.php -> 302
 admin: upload_cover.php -> 302
 admin: profile.php -> 200
-admin: profile.php?user_id=46 -> 200
+admin: profile.php?user_id=58 -> 200
 admin: search.php?query=UX -> 200
 admin: ranking_board.php -> 200
 student: upload_profile.php -> 400
@@ -1094,3 +1096,7 @@ admin: logout.php -> 302
 admin: feed.php -> 302
 ```
 </details>
+
+## Upload and failure follow-up
+
+Confirmed 3 MB upload succeeds with the configured PHP limits, authenticated download bytes match the original, and an 11 MB upload gets a friendly rejection. The test post was archived, not deleted. A CLI-isolated synthetic exception confirmed the shared 500 renderer hides exception details and records them in `var/log/app.log`; no public debug route was added.

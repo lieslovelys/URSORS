@@ -6,11 +6,12 @@ can_post($conn);
 $userId = (int) $_SESSION['user_id'];
 $content = trim($_POST['content'] ?? '');
 if ($content === '') fail_request('Post content is required.');
-$section = $_POST['section'] ?? 'General';
+$section = trim($_POST['section'] ?? 'General');
 if ($section === 'All' || $section === '') $section = 'General';
-$subSection = $_POST['sub_section'] ?? '';
-$nested = $_POST['nested_sub_section'] ?? '';
-$deep = $_POST['deep_sub_section'] ?? '';
+$subSection = trim($_POST['sub_section'] ?? '');
+$nested = trim($_POST['nested_sub_section'] ?? '');
+$deep = trim($_POST['deep_sub_section'] ?? '');
+if (!in_array($deep, ['', 'General', 'Professor Only'], true)) fail_request('Choose General or Professor Only from the subject page.');
 if ($deep === 'Professor Only' && $_SESSION['role'] === 'student') fail_request('Only teachers and admins may post in Professor Only.', 403);
 foreach ([$section, $subSection, $nested, $deep] as $value) {
     if (strlen($value) > 255) fail_request('Course context is too long.');

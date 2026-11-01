@@ -34,7 +34,7 @@ function page_header(string $title, string $active = '', bool $narrow = false): 
     if ($logged && $admin) $items['admin'] = ['Admin','/admin_home.php'];
     $items['help'] = ['Help','/help.php'];
     foreach ($items as $key => [$label,$href]): ?><a href="<?= e($href) ?>" <?= $active === $key ? 'aria-current="page"' : '' ?>><?= e($label) ?></a><?php endforeach; ?>
-    <?php if ($logged): ?><form method="post" action="/logout.php"><?= csrf_field() ?><button>Logout</button></form><?php endif; ?></nav></div></header><main id="main" class="page <?= $narrow ? 'narrow' : '' ?>">
+    <?php if ($logged): ?><form method="post" action="/logout.php"><?= csrf_field() ?><button>Logout</button></form><?php endif; ?></nav></div></header><main id="main" tabindex="-1" class="page <?= $narrow ? 'narrow' : '' ?>">
     <?php foreach ($_SESSION['flash'] ?? [] as $item): ?><div class="flash <?= e($item['type']) ?>" role="status"><?= e($item['message']) ?></div><?php endforeach; unset($_SESSION['flash']);
 }
 function page_footer(): void

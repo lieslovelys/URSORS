@@ -57,7 +57,7 @@ def login(username, role):
 def register(role, suffix=None):
     username=TAG+'_'+(suffix or role)
     data=dict(first_name='UX',last_name=role.title(),email=username+'@example.invalid',username=username,password=PASSWORD,role=role)
-    body,_=request('register.php',role,data)
+    body,_=request('register.php',role,data,follow=True)
     assert 'Your account was sent for approval.' in body
     user_id=sql("SELECT id FROM users WHERE username='"+username+"'")
     USERS[suffix or role]={'username':username,'id':user_id}
@@ -94,6 +94,10 @@ def browser_checks():
                         field_id=field.get_attribute('id')
                         assert field_id and page.locator('label[for="'+field_id+'"]').count(),(path,field_id)
                 page.goto(BASE+'/welcome.php')
+                page.keyboard.press('Tab')
+                expect(page.get_by_role('link',name='Skip to content')).to_be_focused()
+                page.keyboard.press('Enter')
+                assert page.evaluate('document.activeElement.id')=='main'
                 guide=page.get_by_role('button',name='Got it. Hide this guide.')
                 if guide.count():
                     guide.click();page.wait_for_url('**/welcome.php');assert not page.get_by_role('button',name='Got it. Hide this guide.').count()
@@ -128,6 +132,7 @@ def browser_checks():
                     article=page.get_by_role('article').filter(has=page.get_by_text(content,exact=True))
                     article.get_by_text('Manage this post',exact=True).click();article.get_by_role('button',name='Archive post',exact=True).click()
                     assert page.get_by_role('dialog').is_visible()
+                    expect(page.get_by_role('button',name='Cancel',exact=True)).to_be_focused()
                     page.get_by_role('button',name='Cancel',exact=True).click();assert not page.get_by_role('dialog').is_visible()
                     article.get_by_role('button',name='Archive post',exact=True).click();page.get_by_role('button',name='Yes, continue',exact=True).click()
                     assert page.get_by_role('status').filter(has_text='Post archived.').count()
@@ -203,6 +208,8 @@ try:
     request('post_handler.php','student',dict(context,content=TAG),{'image':WORK/'test.png','file':WORK/'test.txt'},expected=(302,))
     post_id=sql("SELECT id FROM posts WHERE content='"+TAG+"'")
     request('post_handler.php','student',dict(context,content='not allowed',deep_sub_section='Professor Only'),expected=(403,))
+    request('post_handler.php','student',dict(context,content='not allowed',deep_sub_section='Professor Only '),expected=(403,))
+    request('post_handler.php','student',dict(context,content='not allowed',deep_sub_section='professor only'),expected=(400,))
     request('post_handler.php','teacher',dict(context,content=TAG+'_prof',deep_sub_section='Professor Only'),expected=(302,))
     request('post_handler.php','teacher',dict(context,content='not allowed'),{'file':WORK/'bad.php'},expected=(400,))
     request('add_comment.php','teacher',{'post_id':post_id,'comment_content':TAG,'_return':'/feed.php?post_id='+post_id},{'comment_file':WORK/'test.txt'},expected=(302,))
@@ -263,5 +270,9 @@ finally:
     sql("UPDATE users SET profile_picture='"+original_images[0]+"',cover_photo='"+original_images[1]+"' WHERE username='admin001'")
 
 report='# UX integration results\n\n'+f'Passed {len(RESULTS)} recorded curl requests on `{BASE}`. All 89 subjects checked for all three roles.\n\nFixture prefix: `{TAG}`. All test accounts disabled; new test posts archived; rows/files retained. No schema changes. Admin image references restored.\n\nNo new entries in `var/log/app.log`. CSRF rejection, approval changes, role checks, uploads, read state, moderation, prepared queries and JSON compatibility checked.\n\n## Browser checks\n\n'+('\n'.join('- '+item for item in BROWSER_RESULTS) or 'Not requested. Set WITH_BROWSER=1.')+'\n\n## Curl request log\n\n<details><summary>Requests</summary>\n\n```text\n'+'\n'.join(RESULTS)+'\n```\n</details>\n'
-(ROOT/'docs/UX_TEST_RESULTS.md').write_text(report)
+report_path=ROOT/'docs/UX_TEST_RESULTS.md'
+previous=report_path.read_text() if report_path.exists() else ''
+if '\n## Upload and failure follow-up\n' in previous:
+    report+='\n## Upload and failure follow-up\n'+previous.split('\n## Upload and failure follow-up\n',1)[1]
+report_path.write_text(report)
 print(f'PASS: {len(RESULTS)} curl requests; {len(BROWSER_RESULTS)} browser scenarios. Report: docs/UX_TEST_RESULTS.md')

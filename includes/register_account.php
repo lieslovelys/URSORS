@@ -14,7 +14,8 @@ function register_account(array $input, bool $adminCreates): array
     if (!filter_var($values['email'], FILTER_VALIDATE_EMAIL) || strlen($values['email']) > 100) $errors['email'] = 'Enter a complete email address, like name@example.com.';
     if (!in_array($values['role'], $adminCreates ? ['student','teacher','admin'] : ['student','teacher'], true)) $errors['role'] = 'Please choose your role at school.';
     $plain = $input['password'] ?? '';
-    if (strlen($plain) < 8 || strlen($plain) > 72) $errors['password'] = 'Use a password with 8–72 bytes. For simple English text, that is 8–72 characters.';
+    if (preg_match_all('/./us', $plain) < 8) $errors['password'] = 'Use at least 8 characters for your password.';
+    elseif (strlen($plain) > 72) $errors['password'] = 'This password is too long. Try a shorter one, especially if it has emoji.';
     if ($errors) return ['errors'=>$errors,'status'=>400];
     $password = password_hash($plain, PASSWORD_BCRYPT);
     $approved = $adminCreates ? 1 : 0;

@@ -49,7 +49,13 @@ if (!$single && !$archived) {
         <div class="field"><label for="file">Attach a file (photo, PDF, etc.)</label><input type="file" id="file" name="file" accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar"><span class="hint">Optional. Up to 10 MB. Photos, PDF, Word, Excel, text, ZIP, or RAR.</span></div><p class="hint">Be kind. Share only materials you have permission to share. Never post passwords or private information.</p><button>Post (I-share)</button></form></section><?php
     }
 }
-if (!$posts) empty_state($mine ? 'You have not shared a post yet.' : ($archived ? 'No archived posts.' : 'No posts yet.'),$archived ? 'Posts you archive will appear here.' : 'Be the first to share something! Open a subject and write a post.');
+if (!$posts) {
+    $emptyText = 'Be the first to share something! Open a subject and write a post.';
+    if ($archived) $emptyText = 'Posts archived by a teacher or admin will appear here.';
+    elseif (!current_user()['can_post']) $emptyText = 'Try another subject for resources. Contact an admin if you need to share a post.';
+    elseif ($context['deep_sub_section']==='Professor Only' && $_SESSION['role']==='student') $emptyText = 'A teacher or admin can share resources here. Check General for other discussions.';
+    empty_state($mine ? 'You have not shared a post yet.' : ($archived ? 'No archived posts.' : 'No posts yet.'), $emptyText);
+}
 foreach ($posts as $post) post_card($post);
 if (!$single): ?><nav class="pagination" aria-label="Post pages"><?php if ($page>1): ?><a class="button secondary" href="?<?= e(http_build_query(array_merge($_GET,['page'=>$page-1]))) ?>">Previous posts</a><?php endif; if ($hasNext): ?><a class="button secondary" href="?<?= e(http_build_query(array_merge($_GET,['page'=>$page+1]))) ?>">More posts</a><?php endif; ?></nav><?php endif;
 if (!$archived) echo '<p><a href="/archived_posts.php' . ($mine ? '?mine=1' : '') . '">View archived posts</a></p>';

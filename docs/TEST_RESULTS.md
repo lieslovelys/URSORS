@@ -1,5 +1,9 @@
 # Integration test results
 
+> Historical pre-redesign checks. Current CSRF-aware curl/browser results are
+> in [UX_TEST_RESULTS.md](UX_TEST_RESULTS.md); accessibility checks are in
+> [ACCESSIBILITY_RESULTS.md](ACCESSIBILITY_RESULTS.md).
+
 Final run used `/usr/bin/php8.3` with `error_reporting=E_ALL`,
 `display_errors=1`, and PHP error logging. The final run produced no new PHP
 error-log entries. A prior 1,019-request integration run also passed on the

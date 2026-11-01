@@ -4,7 +4,7 @@ $isLogin = $screen === 'login';
 $isAdmin = $screen === 'create_account';
 $error = '';
 $errors = [];
-$sent = false;
+$sent = !$isLogin && !$isAdmin && isset($_GET['sent']) && !empty($_SESSION['registration_sent']);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($isLogin) {
         $username = trim($_POST['username'] ?? '');
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors = $result['errors'];
         if ($errors) { $error = 'Please check the form below. ' . implode(' ', $errors); http_response_code($result['status']); }
         elseif ($isAdmin) { flash('Account created. This person can now log in.'); go('/manage_accounts.php'); }
-        else $sent = true;
+        else { $_SESSION['registration_sent'] = true; go('/register.php?sent=1'); }
     }
 }
 page_header($isLogin ? 'Log in' : ($isAdmin ? 'Create account' : 'Register'), $isAdmin ? 'admin' : ($isLogin ? 'login' : 'register'), true);
