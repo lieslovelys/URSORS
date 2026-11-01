@@ -1,0 +1,169 @@
+/* General Body Styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin-top: 100px;
+    padding: 0;
+    background-color: #f9f9f9; /* Light gray background */
+    color: #333; /* Neutral text color */
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Container Styling */
+.container {
+    width: 100%;
+    max-width: 900px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+/* Headings */
+h2 {
+    margin-bottom: 1rem;
+    color: #131313; /* Primary blue color */
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+/* Post Form */
+.post-form-container {
+    margin-bottom: 2rem;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f7f7f7;
+}
+
+.post-form-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 100px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+input[type="file"] {
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #004aad;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #003580;
+}
+
+/* News Feed */
+.news-feed-container {
+    margin-top: 2rem;
+}
+
+.post {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #fefefe;
+}
+
+.post p {
+    margin: 0.5rem 0;
+}
+
+.post img {
+    margin-top: 10px;
+    max-width: 100%;
+    border-radius: 4px;
+}
+
+/* Comments Section */
+.comments-section {
+    margin-top: 15px;
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+}
+
+.comment {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+}
+
+.comment img {
+    max-width: 200px;
+    border-radius: 4px;
+}
+
+/* Forms within posts */
+form {
+    margin-top: 10px;
+}
+
+textarea[name="comment_content"] {
+    width: calc(100% - 20px);
+    min-height: 60px;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.like-section {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.like-section button {
+    margin-right: 10px;
+}
+
+/* Links */
+a {
+    color: #004aad;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    button {
+        font-size: 0.9rem;
+    }
+
+    textarea,
+    input[type="file"] {
+        font-size: 0.9rem;
+    }
+}

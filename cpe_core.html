@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resources | URS S.O.R.S</title>
+    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="home_sections_style.css">
+
+    <style>
+        .container{
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar with Search Form -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="/Admin/FrontEnd/home_sections/course_page.php"><img src="/img/sors_logo.png" alt=""></a>
+            </div>
+                
+                <div class="nav-icons">
+                    <a href="/Admin/FrontEnd/home_sections/course_page.php" class="nav-item">
+                        <span class="material-icons" alt="Home">home</span>
+                    </a>
+                    <a href="/Admin/BackEnd/ranking_board.php" class="nav-item">
+                        <span class="material-icons">leaderboard</span>
+                    </a>
+                    <a href="/Admin/BackEnd/profile.php" class="nav-item">
+                        <span class="material-icons">person</span>
+                    </a>
+                </div>
+
+                
+                <a href="/Admin/BackEnd/notifications.php" class="notification-icon">
+                    <span class="material-icons" >notifications</span> 
+                </a>
+                <p class="notif-count"><strong><?php echo $notification_count; ?></strong></p>
+                
+                
+                <span class="material-icons menu-button" id="menu-button">menu</span>
+        </div> 
+            
+            
+        <div class="dropdown-menu" id="dropdown-menu">
+            <ul>
+                <li><a href="/Admin/FrontEnd/home_sections/course_page.php"><i class=""></i> Home </a></li>
+                <li><a href="/Admin/BackEnd/profile.php"><i class=""></i> Profile </a></li>
+                <li><a href="/Admin/BackEnd/ranking_board.php"><i class=""></i> Rank Board </a></li>
+                
+                <li><a href="/Admin/BackEnd/logout.php"><i class=""></i> Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+
+    
+    
+    <div class="container">
+        <a href="cpe_subject_class_page.html" ><span class="material-icons back-button">arrow_back</span></a>
+
+        <div class="flashcard-container">
+            <a href="/Admin/BackEnd/cpe_core/Engineering Drawing and Design.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Engineering Drawing and Design</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+
+            <a href="/Admin/BackEnd/cpe_core/Engineering Economy.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Engineering Economy</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="flashcard-container">
+            <a href="/Admin/BackEnd/cpe_core/Engineering Mathematics 1.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Engineering Mathematics 1</h3>
+                    <p>Algebra and Trigonometry</p>
+                </div>
+            </a>
+        
+
+            <a href="/Admin/BackEnd/cpe_core/Engineering Mathematics 2.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Engineering Mathematics 2</h3>
+                    <p>Analytic Geometry and Calculus</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="flashcard-container">
+            <a href="/Admin/BackEnd/cpe_core/Engineering Mechanics.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Engineering Mechanics</h3>
+                    <p>Statics and Dynamics</p>
+                </div>
+            </a>
+        
+
+            <a href="/Admin/BackEnd/cpe_core/Environmental Science and Engineering.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Environmental Science and Engineering</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="flashcard-container">
+            <a href="/Admin/BackEnd/cpe_core/Differential Equations.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Differential Equations</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+
+            <a href="/Admin/BackEnd/cpe_core/Probability and Statistics.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Probability and Statistics</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="flashcard-container">
+            <a href="/Admin/BackEnd/cpe_core/Strength of Materials.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Strength of Materials</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+
+            <a href="/Admin/BackEnd/cpe_core/Basic Thermodynamics.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Basic Thermodynamics</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+    
+    
+    
+
+    <!-- <a href="news_feed.php?section=Sports&sub_section=Football&nested_sub_section=Teams&deep_sub_section=PlayerProfiles">Player Profiles</a> -->
+        
+  
+
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuButton = document.getElementById('menu-button');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+
+        menuButton.addEventListener('click', () => {
+            // Toggle the dropdown menu visibility
+            dropdownMenu.style.display =
+                dropdownMenu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close the dropdown menu if clicked outside
+        document.addEventListener('click', (event) => {
+            if (!menuButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+    });
+</script>
+</html>

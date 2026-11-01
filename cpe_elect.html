@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resources | URS S.O.R.S</title>
+    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="home_sections_style.css">
+</head>
+
+<style>
+    .container{
+        margin-top: 60px;
+    }
+</style>
+
+<body>
+
+    <!-- Navigation Bar with Search Form -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="/Admin/FrontEnd/home_sections/course_page.php"><img src="/img/sors_logo.png" alt=""></a>
+            </div>
+                
+                <div class="nav-icons">
+                    <a href="/Admin/FrontEnd/home_sections/course_page.php" class="nav-item">
+                        <span class="material-icons" alt="Home">home</span>
+                    </a>
+                    <a href="/Admin/BackEnd/ranking_board.php" class="nav-item">
+                        <span class="material-icons">leaderboard</span>
+                    </a>
+                    <a href="/Admin/BackEnd/profile.php" class="nav-item">
+                        <span class="material-icons">person</span>
+                    </a>
+                </div>
+
+                
+                <a href="/Admin/BackEnd/notifications.php" class="notification-icon">
+                    <span class="material-icons" >notifications</span> 
+                </a>
+                <p class="notif-count"><strong><?php echo $notification_count; ?></strong></p>
+                
+                
+                <span class="material-icons menu-button" id="menu-button">menu</span>
+        </div> 
+            
+            
+        <div class="dropdown-menu" id="dropdown-menu">
+            <ul>
+                <li><a href="/Admin/FrontEnd/home_sections/course_page.php"><i class=""></i> Home </a></li>
+                <li><a href="/Admin/BackEnd/profile.php"><i class=""></i> Profile </a></li>
+                <li><a href="/Admin/BackEnd/ranking_board.php"><i class=""></i> Rank Board </a></li>
+                
+                <li><a href="/Admin/BackEnd/logout.php"><i class=""></i> Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    
+    <div class="container">
+        <a href="cpe_subject_class_page.html" ><span class="material-icons back-button">arrow_back</span></a>
+
+        <div class="flashcard-container">
+            <a href="/Admin/BackEnd/cpe_elect/Advanced Web Development.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Advanced Web Development</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+
+            <a href="/Admin/BackEnd/cpe_elect/Artificial Intelligence.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Artificial Intelligence and Machine Learning</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="flashcard-container">
+            <a href="/Admin/BackEnd/cpe_elect/Blockchain Technology.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Blockchain Technology</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+        
+
+            <a href="/Admin/BackEnd/cpe_elect/Cloud Computing.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Cloud Computing</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="flashcard-container">
+            <a href="/Admin/BackEnd/cpe_elect/Cybersecurity.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Cybersecurity</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+        
+
+            <a href="/Admin/BackEnd/cpe_elect/Digital Signal Processing.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Digital Signal Processing</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="flashcard-container">
+            <a href="/Admin/BackEnd/cpe_elect/Internet of Things.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Internet of Things (IoT)</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+        
+
+            <a href="/Admin/BackEnd/cpe_elect/Mobile Application Development.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Mobile Application Development</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="flashcard-container">
+            <a href="/Admin/BackEnd/cpe_elect/Robotics and Automation.php" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Internet of Things (IoT)</h3>
+                    <p>BsCPE</p>
+                </div>
+            </a>
+        
+
+            <a href="cpe_elect.html" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>..</h3>
+                    <p>...</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+    
+    
+    
+
+    <!-- <a href="news_feed.php?section=Sports&sub_section=Football&nested_sub_section=Teams&deep_sub_section=PlayerProfiles">Player Profiles</a> -->
+        
+  
+
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuButton = document.getElementById('menu-button');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+
+        menuButton.addEventListener('click', () => {
+            // Toggle the dropdown menu visibility
+            dropdownMenu.style.display =
+                dropdownMenu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close the dropdown menu if clicked outside
+        document.addEventListener('click', (event) => {
+            if (!menuButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+    });
+</script>
+</html>
