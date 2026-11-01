@@ -5,7 +5,7 @@
   "d1_databases": [{
     "binding": "DB",
     "database_name": "ursors",
-    "database_id": "00000000-0000-0000-0000-000000000000",
+    "database_id": "9d7dcf93-39d4-4a2c-81e5-7994305e16f7",
     "migrations_dir": "migrations"
   }]
 }

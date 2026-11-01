@@ -1,6 +1,17 @@
 # URS SORS — Cloudflare preview
 
-This is an isolated, incomplete replacement for the PHP application, not a production-ready deployment. The original application and its data are unchanged.
+## Deployment status — 2026-11-01
+
+- Public URL: https://ursors.pages.dev
+- Pages project: `ursors`, production branch: `trans`.
+- D1: dedicated `ursors` database; migrations 0001–0004 applied remotely, without importing local accounts or posts.
+- Initial deployment used Wrangler direct upload. GitHub branch `trans` contains the source, but automatic deployments on GitHub push are **not configured**.
+- Live browser checks passed for landing/login navigation and unauthenticated access denial on protected API endpoints. Production registration, password-hashing CPU behavior and authenticated workflows still need verification before general public use.
+- First administrator must register on the live site and be explicitly verified/promoted by the trusted operator; no default password exists.
+
+For future reviewed deployments: `npx wrangler pages deploy public --project-name ursors --branch trans` from this directory. Review unapplied remote migrations separately; never import local test data into production.
+
+This is an isolated replacement in progress for the PHP application. A public deployment exists, but the remaining limitations below still apply. The original PHP application and its data are unchanged.
 
 ## Implemented
 
