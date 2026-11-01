@@ -1,6 +1,7 @@
 import { fail, text, resourceLink, validateAccount, randomToken, digest, hashPassword, verifyPassword, checkOrigin } from '../lib/security.js';
+import { AVATARS } from '../../public/avatars.js';
 
-const publicUser = u => ({ id: u.id, username: u.username, name: u.name, role: u.role, approved: u.approved, can_post: u.can_post });
+const publicUser = u => ({ id: u.id, username: u.username, name: u.name, role: u.role, approved: u.approved, can_post: u.can_post, avatar: u.avatar || 'default' });
 const now = () => Math.floor(Date.now() / 1000);
 const json = (data, status = 200, extra = {}) => new Response(JSON.stringify(data), { status, headers: {
   'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store',
@@ -41,13 +42,14 @@ export async function onRequest({ request, env }) {
       await rateLimit(db, request, 'register');
       const account = validateAccount(body);
       const password = await hashPassword(account.password);
+      let registration;
       try {
-        await query(db, 'INSERT INTO users(username,email,name,password,role) VALUES (?,?,?,?,?)', account.username, account.email, account.name, password, account.role).run();
+        registration = await query(db, 'INSERT INTO users(username,email,name,password,role) VALUES (?,?,?,?,?)', account.username, account.email, account.name, password, account.role).run();
       } catch (error) {
         if (String(error.message).includes('UNIQUE')) fail('Unable to register with these details. Try signing in or contact an administrator.', 409);
         throw error;
       }
-      await query(db, `INSERT INTO notifications(user_id,message) SELECT id,? FROM users WHERE role='admin' AND approved=1`, `New account waiting for approval: ${account.name}`).run();
+      await query(db, `INSERT INTO notifications(user_id,message,target_user_id) SELECT id,?,? FROM users WHERE role='admin' AND approved=1`, `New account waiting for approval: ${account.name}`, registration.meta.last_row_id).run();
       return json({ message: 'Registered. Wait for administrator approval before signing in.' }, 201);
     }
     if (path === 'login' && method === 'POST') {
@@ -74,6 +76,11 @@ export async function onRequest({ request, env }) {
       await query(db, 'UPDATE users SET name=? WHERE id=?', name, user.id).run();
       return json({ user: publicUser({ ...user, name }) });
     }
+    if (path === 'profile/avatar' && method === 'POST') {
+      if (!AVATARS.some(avatar => avatar.id === body.avatar)) fail('Choose a preset avatar.');
+      await query(db, 'UPDATE users SET avatar=? WHERE id=?', body.avatar, user.id).run();
+      return json({ user: publicUser({ ...user, avatar: body.avatar }) });
+    }
     if (path === 'users' && method === 'GET') {
       const term = text(new URL(request.url).searchParams.get('q') || '', 'Search', 50);
       const { results } = await query(db, `SELECT id,name,username,role FROM users WHERE approved=1
@@ -81,8 +88,8 @@ export async function onRequest({ request, env }) {
       return json({ users: results });
     }
     if (path === 'notifications' && method === 'GET') {
-      const { results } = await query(db, `SELECT n.*,p.category,p.subject,p.audience,p.archived FROM notifications n
-        LEFT JOIN posts p ON p.id=n.post_id WHERE n.user_id=? ORDER BY n.id DESC LIMIT 100`, user.id).all();
+      const { results } = await query(db, `SELECT n.*,p.category,p.subject,p.audience,p.archived,t.approved AS target_approved FROM notifications n
+        LEFT JOIN posts p ON p.id=n.post_id LEFT JOIN users t ON t.id=n.target_user_id WHERE n.user_id=? ORDER BY n.id DESC LIMIT 100`, user.id).all();
       const count = await query(db, 'SELECT COUNT(*) AS count FROM notifications WHERE user_id=? AND is_read=0', user.id).first();
       return json({ notifications: results, unread: count.count });
     }
@@ -90,6 +97,14 @@ export async function onRequest({ request, env }) {
       if (body.id !== undefined && !Number.isInteger(body.id)) fail('Invalid notification.');
       await query(db, 'UPDATE notifications SET is_read=1 WHERE user_id=? AND (? IS NULL OR id=?)', user.id, body.id ?? null, body.id ?? null).run();
       return json({ message: 'Notifications marked read.' });
+    }
+    const removeComment = /^comments\/(\d+)\/remove$/.exec(path);
+    if (removeComment && method === 'POST') {
+      const comment = await query(db, 'SELECT id,user_id FROM comments WHERE id=? AND deleted=0', Number(removeComment[1])).first();
+      if (!comment) fail('Comment not found.', 404);
+      if (comment.user_id !== user.id && user.role !== 'admin') fail('You can only remove your own comments.', 403);
+      await query(db, 'UPDATE comments SET deleted=1 WHERE id=?', comment.id).run();
+      return json({ message: 'Comment removed from the discussion.' });
     }
     if (path === 'logout' && method === 'POST') {
       await query(db, 'DELETE FROM sessions WHERE token_hash=?', user.token_hash).run();
@@ -121,13 +136,15 @@ export async function onRequest({ request, env }) {
       const subject = url.searchParams.get('subject') || '';
       const audience = url.searchParams.get('audience') || '';
       const author = url.searchParams.get('author') || '';
-      const { results } = await query(db, `SELECT p.*, u.name, u.role,
+      const post = url.searchParams.get('post') || '';
+      const { results } = await query(db, `SELECT p.*, u.name, u.role,u.avatar,
         (SELECT COUNT(*) FROM likes l WHERE l.post_id=p.id) AS likes,
         EXISTS(SELECT 1 FROM likes l WHERE l.post_id=p.id AND l.user_id=?) AS liked
-        FROM posts p JOIN users u ON u.id=p.user_id WHERE p.archived=0
+        FROM posts p JOIN users u ON u.id=p.user_id WHERE (p.archived=0 OR (?<>'' AND (p.user_id=? OR ? IN ('admin','teacher'))))
         AND (?='' OR p.category=?) AND (?='' OR p.subject=?) AND (?='' OR p.audience=?)
         AND (?='' OR p.user_id=?)
-        ORDER BY p.id DESC LIMIT 50`, user.id, category, category, subject, subject, audience, audience, author, author).all();
+        AND (?='' OR p.id=?)
+        ORDER BY p.id DESC LIMIT 50`, user.id, post, user.id, user.role, category, category, subject, subject, audience, audience, author, author, post, post).all();
       return json({ posts: results });
     }
     if (path === 'posts' && method === 'POST') {
@@ -149,7 +166,7 @@ export async function onRequest({ request, env }) {
       const post = await query(db, 'SELECT * FROM posts WHERE id=? AND archived=0', id).first();
       if (!post) fail('Post not found.', 404);
       if (action === 'comments' && method === 'GET') {
-        const { results } = await query(db, `SELECT c.id,c.content,c.created_at,u.name FROM comments c
+        const { results } = await query(db, `SELECT c.id,c.user_id,c.content,c.created_at,u.name,u.avatar FROM comments c
           JOIN users u ON u.id=c.user_id WHERE c.post_id=? AND c.deleted=0 ORDER BY c.id LIMIT 100`, id).all();
         return json({ comments: results });
       }
@@ -192,7 +209,8 @@ export async function onRequest({ request, env }) {
         return json({ stats });
       }
       if (path === 'admin/users' && method === 'GET') {
-        const { results } = await db.prepare('SELECT id,username,name,role,approved,can_post FROM users ORDER BY approved,id DESC LIMIT 100').all();
+        const target = new URL(request.url).searchParams.get('account') || '';
+        const { results } = await query(db, "SELECT id,username,name,role,approved,can_post FROM users WHERE (?='' OR id=?) ORDER BY approved,id DESC LIMIT 100", target, target).all();
         return json({ users: results });
       }
       if (path === 'admin/users' && method === 'POST') {

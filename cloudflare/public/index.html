@@ -5,9 +5,10 @@
   <title>URS SORS · Learn. Share. Help each other.</title>
   <link rel="icon" href="/assets/images/title_icon.png">
   <link rel="stylesheet" href="/assets/legacy.css"><link rel="stylesheet" href="/assets/layout.css"><link rel="stylesheet" href="/assets/cloudflare.css">
+  <link rel="stylesheet" href="/assets/landing.css">
   <script src="/app.js" type="module"></script>
 </head>
-<body class="auth-page auth-login">
+<body class="landing-page">
   <a class="skip" href="#main">Skip to content</a>
   <header class="site-header"><div class="header-inner">
     <a class="brand" href="#home"><img src="/assets/images/sors_logo.png" alt="URS SORS home"><small>Learn. Share. Help each other.</small></a>
@@ -15,9 +16,14 @@
     <a class="sidebar-account" id="account" href="#profile" hidden><img src="/assets/images/default_profile.svg" alt="" width="48" height="48"><span class="sidebar-account-details"><strong id="account-name"></strong><span id="account-username"></span><small id="account-role"></small></span></a>
     <nav id="site-nav" class="nav" aria-label="Main navigation"></nav>
   </div></header>
-  <main id="main" class="page narrow" tabindex="-1">
+  <main id="main" class="page" tabindex="-1">
     <p id="status" class="flash" role="status" aria-live="polite" hidden></p>
-    <section id="auth">
+    <section id="landing-screen" aria-label="Welcome to URS SORS">
+      <section class="landing-intro" aria-labelledby="intro-title"><div class="landing-intro-inner"><img class="landing-seal" src="/assets/images/sors_logo.png" alt="URS SORS" width="240" height="100"><div><p class="landing-motto">Nurturing Tomorrow’s Noblest</p><h1 id="intro-title">University of Rizal System</h1><p class="landing-description">URS SORS is your learning and resource-sharing community. Explore subjects, share helpful materials, and learn together.</p><p class="landing-signature">Share knowledge. Build futures.</p><div class="actions"><a class="button landing-primary" href="#login">Log in</a><a class="button" href="#register">Register</a></div></div></div></section>
+      <section class="landing-how" aria-labelledby="how-title"><div class="landing-container"><p class="landing-section-label">YOUR LEARNING JOURNEY</p><h2 id="how-title">A little sharing.<br>A lot of learning.</h2><div class="landing-steps"><article><span>01 / JOIN</span><h3>Find your place</h3><p>Create your student or teacher account, then wait for admin approval before logging in.</p></article><article><span>02 / DISCOVER</span><h3>Explore your subjects</h3><p>Browse subjects and discover learning materials, community posts, and helpful discussions.</p></article><article><span>03 / CONTRIBUTE</span><h3>Pass it forward</h3><p>Share resources, ask questions, and join discussions to help your learning community grow.</p></article></div></div></section>
+      <footer class="landing-footer"><div class="landing-container"><div class="landing-footer-info"><div><h2>University of Rizal System — SORS</h2><p>A space for sharing knowledge and building futures together.</p></div><p><strong>Need help?</strong> For account approval or access questions, contact your school admin or <a href="#help">visit Help</a>.</p></div><p class="landing-copyright">University of Rizal System | Esponilla, Alyssa Mae | Juralbal, John Kenneth</p></div></footer>
+    </section>
+    <section id="auth" hidden>
       <section id="login-screen"><div class="page-head"><h1>LOGIN</h1></div>
         <section class="panel"><form id="login">
           <div class="field"><label for="login-user">Username</label><input id="login-user" name="username" autocomplete="username" required maxlength="50"><span class="hint">Enter the username you registered.</span></div>
@@ -62,7 +68,31 @@
         </div>
       </section>
       <section data-page="accounts" hidden><div class="page-head"><h1>Account management</h1><p class="muted">Review registrations and manage publishing access.</p></div><div class="panel"><label for="account-filter">Show accounts</label><select id="account-filter"><option value="pending">Waiting for approval</option><option value="all">All accounts</option></select><button id="load-users" type="button" class="secondary">Refresh accounts</button></div><div id="users"></div></section>
-      <section data-page="profile" hidden><div class="page-head"><h1>My profile</h1><p class="muted">Your community account.</p></div><section class="panel profile-summary"><img src="/assets/images/default_profile.svg" width="88" height="88" alt="Default profile image"><div><h2 id="profile-name"></h2><p id="profile-details"></p><p class="hint">Photo uploads are not available in this links-only version.</p></div></section><form id="edit-profile" class="panel"><h2>Edit profile</h2><div class="field"><label for="profile-input">Full name</label><input id="profile-input" name="name" required maxlength="150"></div><button type="submit">Save profile</button></form><button id="logout" type="button" class="secondary">Log out</button></section>
+      <section data-page="profile" class="profile-page" hidden>
+        <div class="page-head"><h1>My profile</h1><p class="muted">Your place in the URS SORS community.</p></div>
+        <section class="profile-identity" aria-labelledby="profile-name">
+          <div class="profile-cover" aria-hidden="true"><span>LEARN. SHARE. GROW.</span></div>
+          <div class="profile-identity-body"><button id="change-avatar" type="button" class="profile-avatar-button" aria-haspopup="dialog" aria-label="Change avatar"><img class="profile-portrait" src="/assets/images/default_profile.svg" width="96" height="96" alt="Your profile avatar"><span>Change avatar</span></button><div class="profile-identity-copy"><span id="profile-role" class="profile-role"></span><h2 id="profile-name"></h2><form id="edit-profile" class="profile-inline-editor" hidden><label for="profile-input">Full name</label><input id="profile-input" name="name" required maxlength="150" autocomplete="name" aria-describedby="profile-name-hint"><span id="profile-name-hint" class="hint">This name appears on your posts and comments.</span><div class="actions"><button type="submit">Save</button><button id="cancel-profile-edit" type="button" class="secondary">Cancel</button></div></form><p id="profile-details"></p></div><button type="button" class="button secondary profile-edit-link" aria-controls="edit-profile" aria-expanded="false">Edit profile</button></div>
+        </section>
+        <div class="profile-layout">
+          <div class="profile-primary">
+            <form id="profile-publish" class="profile-card">
+              <div class="profile-card-heading"><h2>Create post</h2><p>Share a resource or start a discussion in your subject.</p></div>
+              <div class="profile-composer-selects"><div class="field"><label for="profile-category">Program and category</label><select id="profile-category" name="category" required></select></div><div class="field"><label for="profile-subject">Subject</label><select id="profile-subject" name="subject" required></select></div></div>
+              <div class="field"><label for="profile-audience">Audience</label><select id="profile-audience" name="audience"><option value="general">General</option><option value="professor">Professor Only</option></select><span class="hint">Only teachers and administrators can publish in Professor Only.</span></div>
+              <div class="field"><label for="profile-content">What would you like to share?</label><textarea id="profile-content" name="content" required maxlength="5000" rows="3" placeholder="Share a useful resource or ask a question…"></textarea></div>
+              <div class="field"><label for="profile-resource">Resource link <span class="hint">(optional)</span></label><input id="profile-resource" name="resource_url" type="url" maxlength="2048" placeholder="https://drive.google.com/…"><span class="hint">Use an HTTPS link and check its sharing permissions.</span></div>
+              <button type="submit">Publish post</button>
+            </form>
+            <p id="profile-publish-restricted" class="profile-note" hidden>Posting is disabled for your account. Contact your administrator to request access.</p>
+          </div>
+          <aside class="profile-secondary" aria-label="Account details">
+            <section class="profile-card"><div class="profile-card-heading"><h2>Your account</h2><p>Access and community permissions.</p></div><dl class="profile-facts"><div><dt>Username</dt><dd id="profile-username"></dd></div><div><dt>Account status</dt><dd><span class="profile-status">Approved</span></dd></div><div><dt>Posting access</dt><dd id="profile-posting"></dd></div></dl><p class="profile-note">Choose a preset avatar using your profile picture. No uploads needed.</p></section>
+            <section class="profile-card profile-session"><h2>Done for now?</h2><p class="muted">Log out when using a shared device.</p><button id="logout" type="button" class="secondary">Log out</button></section>
+          </aside>
+        </div>
+        <section class="profile-posts" aria-labelledby="profile-posts-title"><div class="section-heading"><h2 id="profile-posts-title">My posts</h2><button id="refresh-profile-posts" type="button" class="secondary">Refresh</button></div><div id="profile-feed" aria-live="polite"></div></section>
+      </section>
       <section data-page="notifications" hidden><div class="page-head"><h1>Notifications</h1><p class="muted">Updates about your account and shared resources.</p></div><div class="actions"><button id="read-notifications" type="button" class="secondary">Mark all as read</button></div><div id="notification-list"></div></section>
       <section data-page="create-account" hidden><div class="page-head"><h1>Create an account</h1><p class="muted">This account will be approved and ready to use.</p></div><form id="create-account" class="panel">
         <div class="field"><label for="create-name">Full name</label><input id="create-name" name="name" required maxlength="150" autocomplete="off"></div>
@@ -74,8 +104,9 @@
       <section data-page="ranking" hidden><div class="page-head"><h1>Community ranking</h1><p class="muted">Contributions are counted by non-archived posts—not grades.</p></div><div id="ranking-list"></div></section>
       <section data-page="archives" hidden><div class="page-head"><h1>Archived posts</h1><p class="muted">Review archived resources and restore them to the subject feed.</p></div><div id="archive-list"></div></section>
     </section>
-    <section id="help-screen" hidden><div class="page-head"><h1>How can we help?</h1><p class="muted">A quick guide to learning and sharing.</p></div><section class="panel"><h2>I can't log in</h2><p>Check your username and password. New accounts need school administrator approval. Contact your administrator if you are still waiting.</p><h2>How do I share a file?</h2><p>Upload it to your preferred file service, configure its sharing permissions, and paste the HTTPS link into a subject post. Direct uploads are not supported here.</p><h2>General or Professor Only?</h2><p>Everyone can read both feeds. Only teachers and administrators can publish in Professor Only.</p><h2>About this version</h2><p>This is a local Cloudflare preview. Notifications, account recovery and several administrative tools are still being migrated. Existing PHP accounts and files have not been imported.</p></section></section>
+    <section id="help-screen" hidden><div class="page-head"><h1>How can we help?</h1><p class="muted">A quick guide to learning and sharing.</p></div><section class="panel"><h2>I can't log in</h2><p>Check your username and password. New accounts need school administrator approval. Contact your administrator if you are still waiting. Original PHP accounts do not automatically work in this preview.</p><h2>How do I share a file?</h2><p>Upload it to your preferred file service, configure its sharing permissions, and paste the HTTPS link into a subject post. Direct uploads are not supported here.</p><h2>General or Professor Only?</h2><p>Everyone can read both feeds. Only teachers and administrators can publish in Professor Only.</p><h2>Admin tools</h2><p>Home shows community posts. Pending Accounts lists registrations awaiting approval; All Accounts manages approval and posting permissions. Admin opens the management overview. Create Account adds an already approved student, teacher, or administrator. Archived Posts lets teachers and admins restore resources.</p><h2>Notifications and discussions</h2><p>Notifications show account updates and activity on your posts. Only you can mark your notifications read. You can remove your own comments; admins can also moderate comments. Removal hides the stored comment instead of deleting it permanently.</p><h2>About this version</h2><p>This is a local Cloudflare preview. Password recovery, additional profile fields, and migration of existing PHP accounts and files are not available yet. It has not been deployed as a public website.</p></section></section>
   </main>
   <footer class="footer"><strong>URS SORS</strong> · A place to learn and share.<br><a href="#help">Need help? Start here.</a><small class="preview-label">Cloudflare preview · Links-only attachments</small></footer>
   <dialog id="confirm-dialog" aria-labelledby="confirm-title"><img class="confirm-logo" src="/assets/images/sors_logo.png" alt="URS SORS"><h2 id="confirm-title">Please confirm</h2><p id="confirm-description"></p><div class="actions"><button type="button" class="secondary" id="confirm-cancel">Cancel</button><button type="button" id="confirm-yes">Yes, continue</button></div></dialog>
+  <dialog id="avatar-dialog" aria-labelledby="avatar-title" aria-describedby="avatar-description"><form id="avatar-form"><h2 id="avatar-title">Choose your avatar</h2><p id="avatar-description">Pick a preset for your profile, posts, and comments.</p><fieldset id="avatar-options"><legend class="sr-only">Preset avatars</legend></fieldset><p id="avatar-error" role="alert" hidden></p><div class="actions"><button id="cancel-avatar" type="button" class="secondary">Cancel</button><button type="submit">Save avatar</button></div></form></dialog>
 </body></html>
