@@ -1,49 +1,21 @@
 <?php
-session_start();
-include 'config.php';
-
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit;
-}
-
-$previous_url = $_SESSION['referrer'];
-if (!isset($previous_url)) {
-    $previous_url = $_SERVER['HTTP_REFERER'];
-    $_SESSION['referrer'] = $previous_url;
-
-// Check if post ID is provided
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['post_id'])) {
-    $post_id = $_POST['post_id'];
-    $user_id = $_SESSION['user_id'];
-
-    // Check if the user has already liked this post
-    $check_sql = "SELECT id FROM likes WHERE post_id = ? AND user_id = ?";
-    $stmt = $conn->prepare($check_sql);
-    $stmt->bind_param("ii", $post_id, $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        // User has already liked, so unlike (delete the like)
-        $delete_sql = "DELETE FROM likes WHERE post_id = ? AND user_id = ?";
-        $stmt = $conn->prepare($delete_sql);
-        $stmt->bind_param("ii", $post_id, $user_id);
-        $stmt->execute();
-    } else {
-        // User has not liked, so add the like
-        $insert_sql = "INSERT INTO likes (post_id, user_id) VALUES (?, ?)";
-        $stmt = $conn->prepare($insert_sql);
-        $stmt->bind_param("ii", $post_id, $user_id);
-        $stmt->execute();
-    }
-
-    $stmt->close();
-}
-}
-// Redirect back to the news feed
-header("Location: $previous_url");
-exit;
-
-?>
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_login();
+require_post();
+$postId = (int) ($_POST['post_id'] ?? 0);
+$userId = (int) $_SESSION['user_id'];
+$stmt = $conn->prepare('SELECT user_id FROM posts WHERE id = ? AND is_archived = 0');
+$stmt->bind_param('i', $postId);
+$stmt->execute();
+$post = $stmt->get_result()->fetch_assoc();
+if (!$post) fail_request('Post not found.', 404);
+$stmt = $conn->prepare('SELECT id FROM likes WHERE post_id = ? AND user_id = ?');
+$stmt->bind_param('ii', $postId, $userId);
+$stmt->execute();
+$liked = $stmt->get_result()->num_rows > 0;
+$stmt = $conn->prepare($liked ? 'DELETE FROM likes WHERE post_id = ? AND user_id = ?' : 'INSERT INTO likes (post_id, user_id) VALUES (?, ?)');
+$stmt->bind_param('ii', $postId, $userId);
+$stmt->execute();
+if (!$liked && $post['user_id'] != $userId) notify_user($conn, (int) $post['user_id'], $_SESSION['username'] . ' liked your post.');
+redirect_back();

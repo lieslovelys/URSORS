@@ -1,6 +1,8 @@
 <?php
-session_start();
-include 'config.php';
+
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_login();
 
 $sql = "SELECT posts.*, users.username 
         FROM posts 
@@ -16,10 +18,10 @@ $result = $conn->query($sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archived Posts</title>
-    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link rel="icon" type="image/ico" href="/assets/images/title_icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="/Admin/FrontEnd/home_sections/home_sections_style.css">
+    <link rel="stylesheet" href="/assets/css/home_sections_style.css">
 
     <style>
         .container{
@@ -34,17 +36,17 @@ $result = $conn->query($sql);
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <a href="/Admin/FrontEnd/home_sections/course_page.php"><img src="/img/sors_logo.png" alt=""></a>
+                <a href="/course_page.php"><img src="/assets/images/sors_logo.png" alt=""></a>
             </div>
                 
                 <div class="nav-icons">
-                    <a href="/Admin/FrontEnd/home_sections/course_page.php" class="nav-item">
+                    <a href="/course_page.php" class="nav-item">
                         <span class="material-icons" alt="Home">home</span>
                     </a>
-                    <a href="/Admin/BackEnd/ranking_board.php" class="nav-item">
+                    <a href="/ranking_board.php" class="nav-item">
                         <span class="material-icons">leaderboard</span>
                     </a>
-                    <a href="/Admin/BackEnd/profile.php" class="nav-item">
+                    <a href="/profile.php" class="nav-item">
                         <span class="material-icons">person</span>
                     </a>
                 </div>
@@ -55,11 +57,11 @@ $result = $conn->query($sql);
             
         <div class="dropdown-menu" id="dropdown-menu">
             <ul>
-                <li><a href="/Admin/FrontEnd/home_sections/course_page.php"><i class=""></i> Home </a></li>
-                <li><a href="/Admin/BackEnd/profile.php"><i class=""></i> Profile </a></li>
-                <li><a href="/Admin/BackEnd/ranking_board.php"><i class=""></i> Rank Board </a></li>
-                <li><a href="/Admin/BackEnd/archived_posts.php"><i class=""></i> Archived Posts</a></li>
-                <li><a href="/Admin/BackEnd/logout.php"><i class=""></i> Logout</a></li>
+                <li><a href="/course_page.php"><i class=""></i> Home </a></li>
+                <li><a href="/profile.php"><i class=""></i> Profile </a></li>
+                <li><a href="/ranking_board.php"><i class=""></i> Rank Board </a></li>
+                <li><a href="/archived_posts.php"><i class=""></i> Archived Posts</a></li>
+                <li><a href="/logout.php"><i class=""></i> Logout</a></li>
             </ul>
         </div>
     </nav>
@@ -92,10 +94,10 @@ $result = $conn->query($sql);
                     </div>
                 <?php endif; ?>
 
-                <form action="post_actions.php" method="POST">
+                <?php if (in_array($_SESSION['role'], ['teacher', 'admin'], true)): ?><form action="post_actions.php" method="POST">
                     <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                     <button type="submit" name="action" value="restore">Restore</button>
-                </form>
+                </form><?php endif; ?>
             </div>
         <?php endwhile; ?>
     </div>

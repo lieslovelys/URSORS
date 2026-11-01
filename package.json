@@ -1,0 +1,14 @@
+{
+  "name": "URSORS",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "/usr/bin/php8.3 -S 0.0.0.0:8000",
+    "test": "python3 scripts/check_project.py",
+    "test:integration": "python3 scripts/smoke_test.py"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

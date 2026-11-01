@@ -1,6 +1,8 @@
 <?php
-session_start();
-include 'config.php';
+
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_admin();
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     die("Access Denied. Admins only.");
@@ -15,8 +17,8 @@ $sql = "SELECT COUNT(*) AS unread_count FROM notifications WHERE user_id = ? AND
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
-$result = $stmt->get_result();
-$notification_count = $result->fetch_assoc()['unread_count'];
+$notification_result = $stmt->get_result();
+$notification_count = $notification_result->fetch_assoc()['unread_count'];
 ?>
 
 <!DOCTYPE html>
@@ -24,9 +26,9 @@ $notification_count = $result->fetch_assoc()['unread_count'];
 <head>
     <meta charset="UTF-8">
     <title>Dashboard | Admin</title>
-    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link rel="icon" type="image/ico" href="/assets/images/title_icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="/Admin/FrontEnd/admin.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
 
     <style>
         body {
@@ -40,7 +42,7 @@ $notification_count = $result->fetch_assoc()['unread_count'];
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <a href="admin_home.php"><img src="/img/sors_logo.png" alt=""></a>
+                <a href="admin_home.php"><img src="/assets/images/sors_logo.png" alt=""></a>
             </div>
                 
                 <div class="nav-icons">

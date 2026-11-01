@@ -1,11 +1,17 @@
 <?php
-include 'config.php';
-session_start();
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_login();
+if ($_SESSION['role'] === 'admin') {
+    header('Location: /admin_home.php');
+    exit;
+}
+
 
 
 // Ensure the user is logged in
 if (!isset($_SESSION['username'])) {
-    header("Location: /Admin/BackEnd/login.php");
+    header("Location: /login.php");
     exit();
 }
 
@@ -31,8 +37,8 @@ $sql = "SELECT COUNT(*) AS unread_count FROM notifications WHERE user_id = ? AND
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
-$result = $stmt->get_result();
-$notification_count = $result->fetch_assoc()['unread_count'];
+$notification_result = $stmt->get_result();
+$notification_count = $notification_result->fetch_assoc()['unread_count'];
 
 
 ?>
@@ -43,9 +49,9 @@ $notification_count = $result->fetch_assoc()['unread_count'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home | Admin</title>
-    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link rel="icon" type="image/ico" href="/assets/images/title_icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="/Admin/FrontEnd/home_sections/home_sections_style.css">
+    <link rel="stylesheet" href="/assets/css/home_sections_style.css">
 
     <style>
         body {
@@ -99,24 +105,24 @@ $notification_count = $result->fetch_assoc()['unread_count'];
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <a href=""><img src="/img/sors_logo.png" alt=""></a>
+                <a href=""><img src="/assets/images/sors_logo.png" alt=""></a>
             </div>
                 
                 <div class="nav-icons">
                     <a href="" class="nav-item">
                         <span class="material-icons" alt="Home">home</span>
                     </a>
-                    <a href="/Admin/BackEnd/ranking_board.php" class="nav-item">
+                    <a href="/ranking_board.php" class="nav-item">
                         <span class="material-icons">leaderboard</span>
                     </a>
-                    <a href="/Admin/BackEnd/profile.php" class="nav-item">
+                    <a href="/profile.php" class="nav-item">
                         <span class="material-icons">person</span>
                     </a>
                     
                 </div>
 
                 
-                <a href="/Admin/BackEnd/notifications.php" class="notification-icon">
+                <a href="/notifications.php" class="notification-icon">
                     <span class="material-icons" >notifications</span> 
                 </a>
                 <p class="notif-count"><strong><?php echo $notification_count; ?></strong></p>
@@ -128,11 +134,11 @@ $notification_count = $result->fetch_assoc()['unread_count'];
             
         <div class="dropdown-menu" id="dropdown-menu">
             <ul>
-                <li><a href="/Admin/FrontEnd/home_sections/course_page.php"><i class=""></i> Home </a></li>
-                <li><a href="/Admin/BackEnd/profile.php"><i class=""></i> Profile </a></li>
-                <li><a href="/Admin/BackEnd/ranking_board.php"><i class=""></i> Rank Board </a></li>
-                <li><a href="/Admin/BackEnd/archived_posts.php"><i class=""></i> Archived Posts</a></li>
-                <li><a href="/Admin/BackEnd/logout.php"><i class=""></i> Logout</a></li>
+                <li><a href="/course_page.php"><i class=""></i> Home </a></li>
+                <li><a href="/profile.php"><i class=""></i> Profile </a></li>
+                <li><a href="/ranking_board.php"><i class=""></i> Rank Board </a></li>
+                <li><a href="/archived_posts.php"><i class=""></i> Archived Posts</a></li>
+                <li><a href="/logout.php"><i class=""></i> Logout</a></li>
             </ul>
         </div>
     </nav>
@@ -141,7 +147,7 @@ $notification_count = $result->fetch_assoc()['unread_count'];
         <h1>WELCOME, <?php echo htmlspecialchars(strtoupper($user['first_name'])); ?>!</h1>
         <p>We’re glad to have you back. Let's explore what's new today!</p>
         <div class="btn-container">
-            <a href="/Admin/FrontEnd/home_sections/course_page.php" class="btn">Resources</a>
+            <a href="/course_page.php" class="btn">Resources</a>
         </div>
     </div>
 </body>

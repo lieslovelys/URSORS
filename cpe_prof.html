@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Resources | URS S.O.R.S</title>
-    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link rel="icon" type="image/ico" href="/assets/images/title_icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="home_sections_style.css">
+    <link rel="stylesheet" href="/assets/css/home_sections_style.css">
 </head>
 
 <style>
@@ -21,23 +21,23 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <a href="/Admin/FrontEnd/home_sections/course_page.php"><img src="/img/sors_logo.png" alt=""></a>
+                <a href="/course_page.php"><img src="/assets/images/sors_logo.png" alt=""></a>
             </div>
                 
                 <div class="nav-icons">
-                    <a href="/Admin/FrontEnd/home_sections/course_page.php" class="nav-item">
+                    <a href="/course_page.php" class="nav-item">
                         <span class="material-icons" alt="Home">home</span>
                     </a>
-                    <a href="/Admin/BackEnd/ranking_board.php" class="nav-item">
+                    <a href="/ranking_board.php" class="nav-item">
                         <span class="material-icons">leaderboard</span>
                     </a>
-                    <a href="/Admin/BackEnd/profile.php" class="nav-item">
+                    <a href="/profile.php" class="nav-item">
                         <span class="material-icons">person</span>
                     </a>
                 </div>
 
                 
-                <a href="/Admin/BackEnd/notifications.php" class="notification-icon">
+                <a href="/notifications.php" class="notification-icon">
                     <span class="material-icons" >notifications</span> 
                 </a>
                 <p class="notif-count"><strong><?php echo $notification_count; ?></strong></p>
@@ -49,11 +49,11 @@
             
         <div class="dropdown-menu" id="dropdown-menu">
             <ul>
-                <li><a href="/Admin/FrontEnd/home_sections/course_page.php"><i class=""></i> Home </a></li>
-                <li><a href="/Admin/BackEnd/profile.php"><i class=""></i> Profile </a></li>
-                <li><a href="/Admin/BackEnd/ranking_board.php"><i class=""></i> Rank Board </a></li>
+                <li><a href="/course_page.php"><i class=""></i> Home </a></li>
+                <li><a href="/profile.php"><i class=""></i> Profile </a></li>
+                <li><a href="/ranking_board.php"><i class=""></i> Rank Board </a></li>
                 
-                <li><a href="/Admin/BackEnd/logout.php"><i class=""></i> Logout</a></li>
+                <li><a href="/logout.php"><i class=""></i> Logout</a></li>
             </ul>
         </div>
     </nav>
@@ -64,7 +64,7 @@
         <a href="cpe_subject_class_page.html" ><span class="material-icons back-button">arrow_back</span></a>
         
         <div class="flashcard-container">
-            <a href="/Admin/BackEnd/cpe_prof/Capstone Design Project.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Capstone+Design+Project" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Capston Design Project</h3>
@@ -72,7 +72,7 @@
                 </div>
             </a>
 
-            <a href="/Admin/BackEnd/cpe_prof/Computer Architecture and Organization.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Computer+Architecture+and+Organization" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Computer Architecture and Organization</h3>
@@ -82,7 +82,7 @@
         </div>
 
         <div class="flashcard-container">
-            <a href="/Admin/BackEnd/cpe_prof/Computer Systems Engineering.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Computer+Systems+Engineering" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Computer Systems Engineering</h3>
@@ -91,7 +91,7 @@
             </a>
         
 
-            <a href="/Admin/BackEnd/cpe_prof/Computer-Aided Drafting and Design.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Computer-Aided+Drafting+and+Design" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Computer-Aided Drafting and Design</h3>
@@ -101,7 +101,7 @@
         </div>
 
         <div class="flashcard-container">
-            <a href="/Admin/BackEnd/cpe_prof/Data Communications and Networking.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Data+Communications+and+Networking" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Data Communications and Networking</h3>
@@ -110,7 +110,7 @@
             </a>
         
 
-            <a href="/Admin/BackEnd/cpe_prof/Data Structures and Algorithms.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Data+Structures+and+Algorithms" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Data Structures and Algorithms</h3>
@@ -120,7 +120,7 @@
         </div>
 
         <div class="flashcard-container">
-            <a href="/Admin/BackEnd/cpe_prof/Database Management Systems.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Database+Management+Systems" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Database Management Systems</h3>
@@ -129,7 +129,7 @@
             </a>
         
 
-            <a href="/Admin/BackEnd/cpe_prof/Discrete Mathematics.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Discrete+Mathematics" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Discrete Mathematics</h3>
@@ -139,7 +139,7 @@
         </div>
 
         <div class="flashcard-container">
-            <a href="/Admin/BackEnd/cpe_prof/Embedded Systems.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Embedded+Systems" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Embedded Systems</h3>
@@ -147,7 +147,7 @@
                 </div>
             </a>
 
-            <a href="/Admin/BackEnd/cpe_prof/Internship.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Internship" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Internship / On-the-Job Training (OJT)<h3>
@@ -157,7 +157,7 @@
         </div>
 
         <div class="flashcard-container">
-            <a href="/Admin/BackEnd/cpe_prof/Introduction to Computer Engineering.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Introduction+to+Computer+Engineering" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Introduction to Computer Engineering</h3>
@@ -165,7 +165,7 @@
                 </div>
             </a>
 
-            <a href="/Admin/BackEnd/cpe_prof/Microprocessor and Microcontroller System.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Microprocessor+and+Microcontroller+System" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Microprocessor and Microcontroller System</h3>
@@ -175,7 +175,7 @@
         </div>
 
         <div class="flashcard-container">
-            <a href="/Admin/BackEnd/cpe_prof/Object-Oriented Programming.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Object-Oriented+Programming" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Object-Oriented Programming</h3>
@@ -183,7 +183,7 @@
                 </div>
             </a>
 
-            <a href="/Admin/BackEnd/cpe_prof/Operating Systems.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Operating+Systems" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Operating Systems</h3>
@@ -193,7 +193,7 @@
         </div>
 
         <div class="flashcard-container">
-            <a href="/Admin/BackEnd/cpe_prof/Signals, Systems, and Transforms.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Signals%2C+Systems%2C+and+Transforms" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Signals, Systems, and Transforms</h3>
@@ -201,7 +201,7 @@
                 </div>
             </a>
 
-            <a href="/Admin/BackEnd/cpe_prof/Software Engineering.php" class="flashcard">
+            <a href="/course_page.php?course=cpe_prof&amp;subject=Software+Engineering" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">book</span>
                     <h3>Software Engineering</h3>
@@ -215,7 +215,7 @@
     
     
 
-    <!-- <a href="news_feed.php?section=Sports&sub_section=Football&nested_sub_section=Teams&deep_sub_section=PlayerProfiles">Player Profiles</a> -->
+    <!-- <a href="feed.php?section=Sports&sub_section=Football&nested_sub_section=Teams&deep_sub_section=PlayerProfiles">Player Profiles</a> -->
         
   
 

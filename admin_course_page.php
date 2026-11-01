@@ -1,14 +1,16 @@
 <?php 
-session_start();
-include 'config.php';
+
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_admin();
 
 // Fetch unread notification count
 $sql = "SELECT COUNT(*) AS unread_count FROM notifications WHERE user_id = ? AND is_read = 0";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
-$result = $stmt->get_result();
-$notification_count = $result->fetch_assoc()['unread_count'];
+$notification_result = $stmt->get_result();
+$notification_count = $notification_result->fetch_assoc()['unread_count'];
 
 ?>
 
@@ -18,9 +20,9 @@ $notification_count = $result->fetch_assoc()['unread_count'];
 <head>
     <meta charset="UTF-8">
     <title>Resources | URS S.O.R.S</title>
-    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link rel="icon" type="image/ico" href="/assets/images/title_icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="/Admin/FrontEnd/admin.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
 
     <style>
         .container{
@@ -34,7 +36,7 @@ $notification_count = $result->fetch_assoc()['unread_count'];
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <a href="admin_home.php"><img src="/img/sors_logo.png" alt=""></a>
+                <a href="admin_home.php"><img src="/assets/images/sors_logo.png" alt=""></a>
             </div>
                 
                 <div class="nav-icons">
@@ -89,14 +91,14 @@ $notification_count = $result->fetch_assoc()['unread_count'];
     
     <div class="container">
         <div class="flashcard-container">
-            <a href="/Admin/FrontEnd/home_sections/ce_subject_class_page.html" class="flashcard">
+            <a href="/ce_subject_class_page.html" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">engineering</span>
                     <h3>Civil Engineering</h3>
                     <p>Bachelor of Science in Civil Engineering</p>
                 </div>
             </a>
-            <a href="/Admin/FrontEnd/home_sections/cpe_subject_class_page.html" class="flashcard">
+            <a href="/cpe_subject_class_page.html" class="flashcard">
                 <div class="flashcard-content">
                     <span class="material-icons flashcard-icon">computer</span>
                     <h3>Computer Engineering</h3>
@@ -110,7 +112,7 @@ $notification_count = $result->fetch_assoc()['unread_count'];
     
     
 
-    <!-- <a href="news_feed.php?section=Sports&sub_section=Football&nested_sub_section=Teams&deep_sub_section=PlayerProfiles">Player Profiles</a> -->
+    <!-- <a href="feed.php?section=Sports&sub_section=Football&nested_sub_section=Teams&deep_sub_section=PlayerProfiles">Player Profiles</a> -->
         
   
 

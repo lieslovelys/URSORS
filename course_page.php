@@ -1,14 +1,19 @@
 <?php 
-session_start();
-include 'config.php';
+
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_login();
+if (isset($_GET['course']) || isset($_GET['subject'])) {
+    require __DIR__ . '/includes/subject.php';
+}
 
 // Fetch unread notification count
 $sql = "SELECT COUNT(*) AS unread_count FROM notifications WHERE user_id = ? AND is_read = 0";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
-$result = $stmt->get_result();
-$notification_count = $result->fetch_assoc()['unread_count'];
+$notification_result = $stmt->get_result();
+$notification_count = $notification_result->fetch_assoc()['unread_count'];
 
 ?>
 
@@ -18,10 +23,10 @@ $notification_count = $result->fetch_assoc()['unread_count'];
 <head>
     <meta charset="UTF-8">
     <title>Resources | URS S.O.R.S</title>
-    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link rel="icon" type="image/ico" href="/assets/images/title_icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="home_sections_style.css">
+    <link rel="stylesheet" href="/assets/css/home_sections_style.css">
 
     <style>
         .container{
@@ -35,23 +40,23 @@ $notification_count = $result->fetch_assoc()['unread_count'];
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <a href="welcome.php"><img src="/img/sors_logo.png" alt=""></a>
+                <a href="welcome.php"><img src="/assets/images/sors_logo.png" alt=""></a>
             </div>
                 
                 <div class="nav-icons">
                     <a href="welcome.php" class="nav-item">
                         <span class="material-icons" alt="Home">home</span>
                     </a>
-                    <a href="/Admin/BackEnd/ranking_board.php" class="nav-item">
+                    <a href="/ranking_board.php" class="nav-item">
                         <span class="material-icons">leaderboard</span>
                     </a>
-                    <a href="/Admin/BackEnd/profile.php" class="nav-item">
+                    <a href="/profile.php" class="nav-item">
                         <span class="material-icons">person</span>
                     </a>
                 </div>
 
                 
-                <a href="/Admin/BackEnd/notifications.php" class="notification-icon">
+                <a href="/notifications.php" class="notification-icon">
                     <span class="material-icons" >notifications</span> 
                 </a>
                 <p class="notif-count"><strong><?php echo $notification_count; ?></strong></p>
@@ -63,15 +68,27 @@ $notification_count = $result->fetch_assoc()['unread_count'];
             
         <div class="dropdown-menu" id="dropdown-menu">
             <ul>
-                <li><a href="/Admin/FrontEnd/home_sections/course_page.php"><i class=""></i> Home </a></li>
-                <li><a href="/Admin/BackEnd/profile.php"><i class=""></i> Profile </a></li>
-                <li><a href="/Admin/BackEnd/ranking_board.php"><i class=""></i> Rank Board </a></li>
-                <li><a href="/Admin/BackEnd/logout.php"><i class=""></i> Logout</a></li>
+                <li><a href="/course_page.php"><i class=""></i> Home </a></li>
+                <li><a href="/profile.php"><i class=""></i> Profile </a></li>
+                <li><a href="/ranking_board.php"><i class=""></i> Rank Board </a></li>
+                <li><a href="/logout.php"><i class=""></i> Logout</a></li>
             </ul>
         </div>
     </nav>
     
     <div class="container">
+        <?php if (isset($subjectContext)): ?>
+        <h1 style="text-align:center"><?php echo htmlspecialchars($subject); ?></h1>
+        <p style="text-align:center"><?php echo htmlspecialchars($subSection); ?></p>
+        <div class="flashcard-container">
+            <?php foreach (['General', 'Professor Only'] as $audience): ?>
+            <a class="flashcard" href="/<?php echo feed_page() . '?' . htmlspecialchars(http_build_query($subjectContext + ['deep_sub_section' => $audience])); ?>">
+                <div class="flashcard-content"><span class="material-icons">book</span><h3><?php echo $audience; ?></h3></div>
+            </a>
+            <?php endforeach; ?>
+        </div>
+        <p style="text-align:center"><a href="/<?php echo htmlspecialchars($course); ?>.html">Back to subjects</a></p>
+        <?php else: ?>
         <div class="flashcard-container">
             <a href="ce_subject_class_page.html" class="flashcard">
                 <div class="flashcard-content">
@@ -89,12 +106,13 @@ $notification_count = $result->fetch_assoc()['unread_count'];
             </a>
         </div>
 
+        <?php endif; ?>
     </div>
     
     
     
 
-    <!-- <a href="news_feed.php?section=Sports&sub_section=Football&nested_sub_section=Teams&deep_sub_section=PlayerProfiles">Player Profiles</a> -->
+    <!-- <a href="feed.php?section=Sports&sub_section=Football&nested_sub_section=Teams&deep_sub_section=PlayerProfiles">Player Profiles</a> -->
         
   
 

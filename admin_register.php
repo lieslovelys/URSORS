@@ -1,32 +1,17 @@
 <?php
-session_start();
-include 'config.php';
+
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_admin();
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     die("Access Denied. Only admins can create accounts.");
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $first_name = trim($_POST['first_name']);
-    $middle_name = trim($_POST['middle_name']);
-    $last_name = trim($_POST['last_name']);
-    $email = trim($_POST['email']);
-    $username = $_POST['username'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $role = $_POST['role']; // 'student' , 'teacher' or 'admin'
-
-    $sql = "INSERT INTO users (first_name, middle_name, last_name, email, username, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssssss", $first_name, $middle_name, $last_name, $email, $username, $password, $role);
-
-    if ($stmt->execute()) {
-        echo "Account created successfully!";
-    } else {
-        echo "Error: " . $conn->error;
-    }
-
-    $stmt->close();
-    $conn->close();
+    require __DIR__ . '/includes/register_account.php';
+    header('Location: /admin_dashboard.php');
+    exit;
 }
 
 // Fetch unread notification count
@@ -34,8 +19,8 @@ $sql = "SELECT COUNT(*) AS unread_count FROM notifications WHERE user_id = ? AND
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
-$result = $stmt->get_result();
-$notification_count = $result->fetch_assoc()['unread_count'];
+$notification_result = $stmt->get_result();
+$notification_count = $notification_result->fetch_assoc()['unread_count'];
 
 ?>
 
@@ -44,9 +29,9 @@ $notification_count = $result->fetch_assoc()['unread_count'];
 <head>
     <meta charset="UTF-8">
     <title>Create Account | Admin</title>
-    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link rel="icon" type="image/ico" href="/assets/images/title_icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="/Admin/FrontEnd/admin.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
     <style>
         body {
             margin-top: 80px;
@@ -58,7 +43,7 @@ $notification_count = $result->fetch_assoc()['unread_count'];
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <a href="admin_home.php"><img src="/img/sors_logo.png" alt=""></a>
+                <a href="admin_home.php"><img src="/assets/images/sors_logo.png" alt=""></a>
             </div>
                 
                 <div class="nav-icons">

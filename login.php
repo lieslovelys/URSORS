@@ -1,50 +1,19 @@
 <?php
-session_start();
-include 'config.php';
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-
-    $sql = "SELECT id, password, role, is_approved FROM users WHERE username = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows == 1) {
-        $user = $result->fetch_assoc();
-
-        if ($user['is_approved'] == 0) {
-            echo "Your account is pending admin approval.";
-        } elseif (password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $username;
-            $_SESSION['role'] = $user['role'];
-
-            if ($user['role'] == 'admin') {
-                header("Location: admin_home.php");
-            } elseif ($user['role'] == 'teacher'){
-                header("Location: /Admin/FrontEnd/home_sections/welcome.php");
-            }
-            else {
-                header("Location: /Admin/FrontEnd/home_sections/welcome.php");
-            }
-           exit;
-        } else {
-            echo "Invalid password.";
-        }
-    } else {
-        echo "No user found with that username.";
-    }
-
-    $stmt->close();
-
-}
-//Redirect to login if the user is not logged in
-if (!isset($_SESSION['username'])) {
-    header("Location: /Admin/FrontEnd/login.html");
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: /login.html');
     exit;
 }
-
-?>
+$username = trim($_POST['username'] ?? '');
+$password = $_POST['password'] ?? '';
+$stmt = $conn->prepare('SELECT * FROM users WHERE username = ?');
+$stmt->bind_param('s', $username);
+$stmt->execute();
+$user = $stmt->get_result()->fetch_assoc();
+if (!$user || !password_verify($password, $user['password'])) fail_request('Invalid username or password.', 401);
+if (!$user['is_approved']) fail_request('Your account is pending admin approval.', 403);
+session_regenerate_id(true);
+$_SESSION = ['user_id' => $user['id'], 'username' => $user['username'], 'role' => $user['role']];
+header('Location: /' . ($user['role'] === 'admin' ? 'admin_home.php' : 'welcome.php'));
+exit;

@@ -1,6 +1,8 @@
 <?php
-session_start();
-include 'config.php'; // Database connection file
+
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_login(); // Database connection file
 
 // Redirect to login if the user is not logged in
 if (!isset($_SESSION['username'])) {
@@ -31,7 +33,7 @@ if (isset($_GET['query'])) {
 <head>
     <meta charset="UTF-8">
     <title>Search Results</title>
-    <link rel="stylesheet" href="/Admin/FrontEnd/style.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
 
@@ -41,7 +43,7 @@ if (isset($_GET['query'])) {
             <input type="text" name="query" placeholder="Search for users..." required>
             <button type="submit">Search</button>
         </form>
-        <a href="news_feed.php">Home</a>
+        <a href="feed.php">Home</a>
         <a href="profile.php">Profile</a>
         
         <a href="logout.php">Logout</a>
@@ -56,7 +58,7 @@ if (isset($_GET['query'])) {
             <ul class="user-list">
                 <?php while ($user = $result->fetch_assoc()): ?>
                     <li class="user-item">
-                        <img src="uploads/<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile Picture" class="user-profile-pic">
+                        <img src="<?php echo htmlspecialchars(profile_image($user['profile_picture'], 'profile')); ?>" alt="Profile Picture" class="user-profile-pic">
                         <a href="profile.php?user_id=<?php echo $user['id']; ?>">
                             <?php echo htmlspecialchars($user['username']); ?>
                         </a>
