@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/includes/bootstrap.php';
 header('Content-Type: application/json; charset=utf-8');
 require_login();
 require_post();
@@ -13,4 +12,4 @@ if ($content === '') {
 $stmt = $conn->prepare('INSERT INTO posts (user_id, content) VALUES (?, ?)');
 $stmt->bind_param('is', $_SESSION['user_id'], $content);
 $stmt->execute();
-echo json_encode(['status' => 'success', 'id' => $conn->insert_id]);
+echo json_encode(['status' => 'success', 'id' => $conn->insert_id, 'message' => 'Your post was shared. Thank you!']);

@@ -1,0 +1,53 @@
+:root { font-family: Arial, sans-serif; color: #102653; background: #c0cff4; line-height: 1.5; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+.skip { position: absolute; left: 16px; top: -60px; background: white; padding: 10px; }
+.skip:focus { top: 10px; }
+.container, .intro-inner { width: min(1200px, calc(100% - 64px)); margin-inline: auto; }
+.intro, footer { background: linear-gradient(110deg, #06152e, #123f99); color: white; }
+.intro { padding: 64px 0; background: linear-gradient(rgba(0,0,0,.75), rgba(0,0,0,.75)), url('/assets/images/login_bg.webp') center / cover no-repeat; }
+.intro-inner { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; align-items: center; }
+.seal { width: 240px; max-width: 100%; height: auto; object-fit: contain; }
+.motto { font: italic bold 1.4rem Georgia, serif; color: #c0cff4; margin: 0 0 12px; }
+h1 { font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.15; margin: 0 0 24px; }
+.description { max-width: 800px; font-size: 1.1rem; color: #d4def5; }
+.signature { font: italic 1.3rem Georgia, serif; color: #d4def5; }
+.actions { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
+.button { display: inline-block; padding: 12px 26px; border: 1px solid #a8b8d6; border-radius: 10px; color: white; font-weight: bold; text-decoration: none; }
+.button.primary { background: white; border-color: white; color: #1245a6; }
+.button:hover { background: #dae5ff; color: #102653; }
+a:focus-visible { outline: 3px solid #e2ac35; outline-offset: 4px; }
+.how { padding: 48px 0 60px; background: #0b1b4b; }
+.how .section-label, .how .step { color: #cbd6ff; }
+.how h2, .how .steps h3 { color: #fff; }
+.how .steps p { color: #e0e6ff; }
+.how .steps, .how .steps article { border-color: #ffffff40; }
+.how-heading { display: flex; align-items: end; justify-content: space-between; gap: 28px; margin-bottom: 32px; }
+.section-label { margin: 0 0 10px; color: #2345ac; font-size: .72rem; font-weight: bold; letter-spacing: .16em; }
+.how h2 { color: #fff; font: bold clamp(1.8rem, 3vw, 2.5rem)/1.15 Georgia, serif; margin: 0; }
+.how-heading > p { max-width: 320px; margin: 0; color: #655e50; }
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid #bac9ee; }
+.steps article { padding: 28px 28px 8px; border-right: 1px solid #bac9ee; }
+.steps article:first-child { padding-left: 0; }
+.steps article:last-child { border-right: 0; }
+.step { display: inline-block; color: #2345ac; font-size: .75rem; letter-spacing: .1em; font-weight: bold; }
+.steps h3 { color: #131c2d; font-size: 1.2rem; margin: 18px 0 8px; }
+.steps p { color: #536174; margin: 0; }
+footer { padding: 28px 0 12px; background: linear-gradient(rgba(0,0,0,.85), rgba(0,0,0,.85)), url('/assets/images/login_bg.webp') center / cover no-repeat; }
+.footer-info { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; }
+footer h2 { font-size: 1.15rem; margin: 0 0 10px; }
+footer p { color: #cbd8f3; margin: 0 0 14px; }
+footer a { color: white; }
+.copyright { border-top: 1px solid #ffffff26; padding-top: 14px; margin-top: 18px; font-size: .85rem; }
+@media (max-width: 700px) {
+    .container, .intro-inner { width: calc(100% - 36px); }
+    .intro { padding: 32px 0; }
+    .intro-inner { grid-template-columns: 1fr; gap: 20px; }
+    .seal { width: 180px; height: auto; }
+    .motto { font-size: 1.05rem; }
+    .steps, .footer-info { grid-template-columns: 1fr; gap: 16px; }
+    .how-heading { flex-direction: column; align-items: start; gap: 16px; }
+    .how { padding: 28px 0; }
+    .steps article, .steps article:first-child { padding: 20px 0; border-right: 0; border-bottom: 1px solid #bac9ee; }
+    .steps article:last-child { border-bottom: 0; }
+}

@@ -1,67 +1,116 @@
 # URS SORS project map
 
-## Navigation
+## Request flow
 
-`index.php` → `login.html` → `login.php`. Approved admins land on
-`admin_home.php`; approved teachers/students land on `welcome.php`.
-Welcome → `course_page.php` → `ce_subject_class_page.html` or
-`cpe_subject_class_page.html` → category → subject → role-specific feed.
-Subject URLs use `course_page.php?course=cpe_core&subject=Engineering+Economy`.
-The subject page offers General and Professor Only feeds. Students can read
-Professor Only resources but cannot post there.
+`pnpm dev` starts PHP 8.3 on port 8000 with `router.php`.
 
-## Every application file
+1. The router redirects old `.html` bookmarks, serves public brand assets,
+   protects source/support folders, and checks login before serving uploads.
+2. A root page selects a screen in `includes/pages.php`.
+3. `includes/bootstrap.php` starts shared services, hides/logs errors, sets
+   response headers, loads the one DB configuration, and validates POST CSRF.
+4. The dispatcher checks login/admin access before loading the shared view.
+5. Views use the same layout, navigation, footer, field helpers, flash messages,
+   and confirmation dialog. Mutating forms POST to protected handlers and
+   redirect with a plain-language result banner.
 
-| Files | Purpose |
+## Navigation and subjects
+
+`index.php` → `login.php` → `welcome.php` (student/teacher) or
+`admin_home.php` (admin). The Home navigation item opens the same simple
+welcome/actions screen for all roles; Admin opens the admin task dashboard.
+
+`course_page.php` → `?program=ce|cpe` → `?course=ce_core` (or another group)
+→ `?course=ce_core&subject=Engineering+Economy` → General / Professor Only feed.
+
+The eight groups and all 89 original subjects are in `includes/catalogue.json`.
+`includes/catalogue.php` maps card names to the original database hierarchy.
+Breadcrumbs show the selected program, group, subject, and audience. Students
+can read/comment in Professor Only feeds but cannot publish posts there.
+
+## Root pages and handlers
+
+| Files | Shared destination / responsibility |
 |---|---|
-| `index.php`, `login.html`, `login.php`, `logout.php` | Entry point, login form, bcrypt authentication/approval check, session logout |
-| `register.html`, `register.php` | Student/teacher registration pending admin approval |
-| `config.php` | Single database connection/settings source |
-| `welcome.php` | Student/teacher welcome and resource navigation |
-| `course_page.php`, `admin_course_page.php` | Degree catalogue; shared subject landing page and admin catalogue |
-| `ce_subject_class_page.html`, `cpe_subject_class_page.html` | Degree category selectors |
-| `ce_core.html`, `cpe_core.html` | Core engineering subject cards |
-| `ce_elect.html`, `cpe_elect.html` | Elective subject cards |
-| `ce_prof.html`, `cpe_prof.html` | Professional subject cards |
-| `ce_gen_ed.html`, `cpe_gen_ed.html` | General education subject cards |
-| `student_feed.php`, `teacher_feed.php`, `home.php` | Role-oriented feeds with hierarchy filters, posts, comments, attachments, likes and moderation |
-| `feed.php` | Older general-purpose feed, retained as a reachable legacy view |
-| `post_handler.php`, `newsfeed_post.php` | Form post creation and compatibility entry point |
-| `add_post.php`, `get_posts.php` | JSON post creation/list endpoints |
-| `add_comment.php`, `comment.php` | Comment/attachment creation and compatibility entry point |
-| `like.php` | Like/unlike toggle and owner notification |
-| `post_actions.php`, `delete_post.php` | Archive/restore; admin removal preserves posts by archiving |
-| `delete_comment.php` | Owner/admin comment removal, preserving stored rows |
-| `profile.php`, `admin_profile.php` | Profile display/uploads; admin profile also embeds the older feed |
-| `upload_profile.php`, `upload_cover.php` | Validated image uploads and profile updates |
-| `search.php` | Username search and profile links |
-| `ranking_board.php`, `admin_ranking.php` | Post-count leaderboards, including zero-post users |
-| `notifications.php`, `admin_notif.php` | Notification history and mark-as-read |
-| `archived_posts.php`, `admin_archive.php` | Archived content and teacher/admin restoration |
-| `admin_home.php` | Admin navigation hub |
-| `admin_dashboard.php` | All-user listing |
-| `manage_accounts.php` | Posting permission management |
-| `admin_pendings.php` | Pending account approvals; rejection must not delete users |
-| `admin_register.php` | Admin-created approved accounts |
+| `index.php` | Send visitors to login or Home |
+| `login.php`, `register.php`, `admin_register.php` | `views/auth.php`: labeled forms, password controls, validation, approval explanation; admin creation is protected |
+| `login.html`, `register.html` | Old bookmarks redirect to their PHP screens |
+| `logout.php` | CSRF-protected POST logout with confirmation banner |
+| `welcome.php` | `views/home.php`: role/name, Browse Subjects, My Posts, notifications, ranking, dismissible Quick Guide |
+| `course_page.php`, `admin_course_page.php` | `views/catalogue.php`: program/group/subject/audience cards and subject search |
+| `ce_subject_class_page.html`, `cpe_subject_class_page.html` | Compatibility redirects to the program selector |
+| `ce_core.html`, `ce_elect.html`, `ce_prof.html`, `ce_gen_ed.html`, corresponding `cpe_*.html` | Compatibility redirects to the correct group |
+| `feed.php`, `home.php`, `student_feed.php`, `teacher_feed.php` | `views/feed.php`: shared paginated feed, composer, contextual permissions, My Posts (`mine=1`), single post (`post_id=N`) |
+| `archived_posts.php`, `admin_archive.php` | Same feed view in archive mode; restore controls only for teachers/admins |
+| `profile.php`, `admin_profile.php` | `views/profile.php`: profile photos, previews, own uploads; no duplicate embedded feed |
+| `search.php` | `views/search.php`: name/username search linked from Profile |
+| `notifications.php`, `admin_notif.php` | `views/notifications.php`: unread styling, related-post links, explicit POST Mark all as read |
+| `ranking_board.php`, `admin_ranking.php` | `views/ranking.php`: paginated contribution list and not-grades explanation |
+| `admin_home.php`, `admin_dashboard.php` | `views/admin.php`: counted task cards and short admin help |
+| `manage_accounts.php`, `admin_pendings.php` | Same admin view: searchable mobile-friendly accounts, approval/rejection/posting actions |
+| `post_handler.php`, `newsfeed_post.php` | Normal form post creation and compatibility alias |
+| `add_post.php`, `get_posts.php` | JSON creation/list endpoints; POST creation requires CSRF |
+| `add_comment.php`, `comment.php` | Text/file comment creation and compatibility alias |
+| `like.php` | Like/unlike toggle with feedback and linked owner notification |
+| `post_actions.php`, `delete_post.php` | Archive/restore; admin removal archives instead of deleting |
+| `delete_comment.php` | Owner/admin soft-removal using existing `is_deleted` |
+| `upload_profile.php`, `upload_cover.php` | Validated own-account image uploads and feedback |
+| `help.php` | Shared-layout, public help for students/teachers and admins |
+| `config.php` | The only DB connection/settings source; direct HTTP access blocked |
+| `router.php` | Routing, safe static serving/downloads, friendly 404, source-folder protection |
 
-## Assets and supporting files
+## Shared implementation
 
-`assets/css/` holds active styles: `admin.css` (admin navigation),
-`home_sections_style.css` (catalogue), `login.css`, `register.css`,
-`profile.css`, and `style.css` (feeds). `assets/images/` holds the original
-five PNG assets and fallback profile/cover SVGs. The unreferenced
-`admin_dashboard.css` and `index.css` are preserved in `_unused/assets/css/`;
-the unreferenced older JSON feed client is `_unused/assets/js/script.js`.
-Inline navigation scripts remain with their existing pages.
+- `includes/app.php`: sessions, login/admin/post checks, safe return redirects,
+  uploads, notifications, friendly request errors.
+- `includes/bootstrap.php`: CSRF validation, error logging/exception page,
+  shared security headers, layout and DB loading.
+- `includes/layout.php`: header/nav/footer, flash banners, cards, labeled fields,
+  CSRF fields and shared confirmation dialog.
+- `includes/pages.php`: screen dispatcher and access guards.
+- `includes/post_components.php`: one post/comment/attachment renderer used by
+  all feeds and archives.
+- `includes/register_account.php`: server-side field validation and bcrypt
+  registration service. Optional middle names remain supported by the database;
+  the simpler form asks only for first/last name.
+- `includes/catalogue.json`, `includes/catalogue.php`: canonical catalogue and
+  subject hierarchy helpers. `includes/subject.php` retains a compatibility helper.
+- `includes/views/`: `auth.php`, `home.php`, `catalogue.php`, `feed.php`,
+  `admin.php`, `profile.php`, `notifications.php`, `ranking.php`, `search.php`.
 
-`includes/app.php` provides session, authorization, redirects, uploads and
-notification helpers. `includes/subject.php` maps catalogue subjects to feed
-filters. `uploads/` contains generated runtime files, not committed to git.
-`Database/urs_sors.sql` is the original export, not a migration to run over a
-populated database. `package.json`/`pnpm-lock.yaml` support the dev command.
-The original distribution ZIP is preserved in `_unused/URS SORS.zip` rather
-than deleted. No application page was removed as unused. `scripts/` holds
-non-mutating lint/link checks, opt-in data-retaining integration tests, and
-a CLI-only password setter. `docs/` contains this map, the repair summary,
-and the latest integration request log. `Database/migrations/` contains the
-non-destructive schema adjustment.
+## Assets, preserved files, and runtime data
+
+`assets/css/app.css` is the only active stylesheet; `assets/js/app.js` handles
+mobile navigation, password visibility, inline validation, photo previews, and
+Yes/Cancel confirmations. No font/icon CDN is needed by the UI. Existing logo,
+background PNGs, and default image SVGs remain in `assets/images/`.
+
+The pre-redesign root pages, helpers, checks and old styles are preserved under
+`_unused/redesign_before/`. Older distribution files remain in `_unused/`.
+Nothing was discarded. Those folders are not HTTP-accessible through the router.
+
+`uploads/` and `var/log/app.log` are runtime data, excluded from git. New related
+notifications append a `[post:N]` marker to the existing message field; the UI
+removes the marker when displaying text. Older messages without a post reference
+still work with a related-page fallback. No schema change is required.
+
+`Database/urs_sors.sql` is the original export. `Database/migrations/` contains
+the earlier technical repair; do not reimport or run a new migration for the UX
+redesign. The Quick Guide dismissal is stored in the session and a per-user,
+HttpOnly, SameSite browser cookie, not a new database column.
+
+## Checks and documentation
+
+- `scripts/check_project.py`: PHP lint, local references, catalogue retention,
+  and shared CSRF/error-setting checks (`pnpm test`).
+- `scripts/smoke_test.py`: compatibility launcher for `ux_integration.py`.
+- `scripts/ux_integration.py`: opt-in curl tests plus optional Chromium role
+  workflows at 1280px and 360px. Fixtures are retained, users disabled, new posts
+  archived, and original admin photos restored even when assertions fail.
+- `scripts/accessibility_check.py`: optional read-only axe/Chromium checks with
+  a locally supplied axe-core script.
+- `scripts/set_admin_password.php`: existing CLI-only password setter.
+- `requirements-dev.txt`: optional Playwright test dependency.
+- `docs/USER_GUIDE.md`, `UX_REDESIGN.md`, `UX_TEST_RESULTS.md`,
+  `ACCESSIBILITY_RESULTS.md`: current UX guide, changes, decisions and evidence.
+- `docs/REPAIR_SUMMARY.md`, `TEST_RESULTS.md`: historical technical repair notes.

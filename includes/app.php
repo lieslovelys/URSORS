@@ -3,11 +3,26 @@ if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__) {
     http_response_code(404);
     exit;
 }
-if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    ini_set('session.use_strict_mode', '1');
+    session_set_cookie_params(['httponly'=>true, 'samesite'=>'Lax', 'secure'=>!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off']);
+    session_start();
+}
 
 function fail_request(string $message, int $status = 400): never
 {
     http_response_code($status);
+    if (defined('SORS_APP') && function_exists('page_header')) {
+        if (in_array(basename($_SERVER['SCRIPT_NAME'] ?? ''), ['add_post.php', 'get_posts.php'], true)) {
+            header('Content-Type: application/json');
+            exit(json_encode(['status' => 'error', 'message' => $message]));
+        }
+        page_header($status === 404 ? 'Page not found' : 'Please try again');
+        heading($status === 404 ? 'We could not find that page.' : 'We could not finish that.', $message);
+        echo '<div class="actions"><a class="button" href="' . (!empty($_SESSION['user_id']) ? '/welcome.php' : '/login.php') . '">Go back Home</a><a class="button secondary" href="/help.php">Get help</a></div>';
+        page_footer();
+        exit;
+    }
     exit(htmlspecialchars($message, ENT_QUOTES, 'UTF-8'));
 }
 function feed_page(): string
@@ -28,8 +43,8 @@ function require_login(): void
     $stmt->execute();
     $user = $stmt->get_result()->fetch_assoc();
     if (!$user || !$user['is_approved']) {
-        $_SESSION = [];
-        fail_request('Account is not approved.', 403);
+        $_SESSION = ['csrf_token' => bin2hex(random_bytes(32))];
+        fail_request('Your account is not approved yet. Please contact your school admin before logging in again.', 403);
     }
     $_SESSION['role'] = $user['role'];
 }
@@ -47,7 +62,7 @@ function require_post(): void
 }
 function redirect_back(): never
 {
-    $referer = parse_url($_SERVER['HTTP_REFERER'] ?? '');
+    $referer = parse_url($_POST['_return'] ?? $_SERVER['HTTP_REFERER'] ?? '');
     $host = $_SERVER['HTTP_HOST'] ?? '';
     $path = $referer['path'] ?? '';
     $safe = $path !== '' && !str_starts_with($path, '//')
@@ -56,18 +71,23 @@ function redirect_back(): never
     header('Location: ' . ($safe ? $path . (isset($referer['query']) ? '?' . $referer['query'] : '') : '/' . feed_page()));
     exit;
 }
-function notify_user(mysqli $conn, int $userId, string $message): void
+function notify_user(mysqli $conn, int $userId, string $message, ?int $postId = null): void
 {
+    if ($postId) $message .= ' [post:' . $postId . ']';
     $stmt = $conn->prepare('INSERT INTO notifications (user_id, message) VALUES (?, ?)');
     $stmt->bind_param('is', $userId, $message);
     $stmt->execute();
+}
+function actor_name(): string
+{
+    return function_exists('current_user') && current_user() ? display_name(current_user()) : ($_SESSION['username'] ?? 'Someone');
 }
 function can_post(mysqli $conn): void
 {
     $stmt = $conn->prepare('SELECT can_post FROM users WHERE id = ?');
     $stmt->bind_param('i', $_SESSION['user_id']);
     $stmt->execute();
-    if (!(int) ($stmt->get_result()->fetch_assoc()['can_post'] ?? 0)) fail_request('Your posting permission is disabled.', 403);
+    if (!(int) ($stmt->get_result()->fetch_assoc()['can_post'] ?? 0)) fail_request('Posting is turned off for your account. Please contact an admin.', 403);
 }
 function uploaded_file(string $field, string $folder, bool $imageOnly = false): ?string
 {

@@ -1,5 +1,10 @@
 # Repair summary
 
+> Historical technical-repair notes. The later UX redesign replaces the page
+> layout/asset structure and adds CSRF, safe routing, and private error logging.
+> See [current project map](PROJECT_MAP.md), [UX changes](UX_REDESIGN.md), and
+> [User Guide](USER_GUIDE.md) for the current system.
+
 ## Fixed
 
 - Removed old XAMPP Admin/FrontEnd/BackEnd paths from live PHP/HTML/CSS/JS;
