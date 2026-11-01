@@ -36,9 +36,10 @@ if ($sent) {
     echo '<div class="panel"><h2>What happens next?</h2><ol class="guide-list"><li>Your school admin checks your details.</li><li>Ask your admin if you have not heard back. There is no automatic approval email.</li><li>Once approved, log in with the username and password you chose.</li></ol><a class="button" href="/login.php">Go to login</a></div>';
     page_footer(); return;
 }
-heading($isLogin ? 'Welcome to URS SORS' : ($isAdmin ? 'Create an account' : 'Create your account'), $isLogin ? 'Find your subjects. Share resources. Learn together.' : ($isAdmin ? 'This account will be approved and ready to use.' : 'For students and teachers. An admin will check your account first.'));
+heading($isLogin ? 'LOGIN' : ($isAdmin ? 'Create an account' : 'REGISTER'), $isAdmin ? 'This account will be approved and ready to use.' : '');
+if (!$isLogin && !$isAdmin) echo '<p class="registration-note" role="note">After registering, please wait for admin approval before logging in.</p>';
 if ($error) echo '<div class="flash error" role="alert">' . e($error) . '</div>';
-?><section class="panel"><form method="post" action="<?= $isLogin ? '/login.php' : ($isAdmin ? '/admin_register.php' : '/register.php') ?>" data-validate><?= csrf_field() ?>
+?><section class="panel"><form method="post" action="<?= $isLogin ? '/login.php' : ($isAdmin ? '/admin_register.php' : '/register.php') ?>" data-validate <?= $isLogin ? 'data-confirm="Continue logging in to your account?" data-confirm-title="Log in?" data-confirm-button="Yes, log in"' : '' ?>><?= csrf_field() ?>
 <?php if (!$isLogin):
 field('first_name', 'First name', 'text', 'Use the name your school knows you by.', true, $_POST['first_name'] ?? '');
 field('last_name', 'Last name', 'text', '', true, $_POST['last_name'] ?? '');

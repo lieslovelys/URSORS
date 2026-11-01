@@ -23,5 +23,9 @@ $stmt = $conn->prepare('INSERT INTO posts (user_id, content, section, sub_sectio
 $stmt->bind_param('isssssss', $userId, $content, $section, $subSection, $nested, $deep, $image, $file);
 $stmt->execute();
 flash('Your post was shared. Thank you!');
+if (($_POST['source'] ?? '') === 'profile') {
+    header('Location: /profile.php#profile-posts');
+    exit;
+}
 header('Location: /' . feed_page() . '?' . http_build_query(['section' => $section, 'sub_section' => $subSection, 'nested_sub_section' => $nested, 'deep_sub_section' => $deep]));
 exit;

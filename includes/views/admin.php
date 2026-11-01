@@ -38,7 +38,7 @@ heading($pending ? 'Pending Accounts (' . (int)$counts['pending'] . ')' : 'All A
 <form method="get" class="page-search" action="<?= $pending ? '/admin_pendings.php' : '/manage_accounts.php' ?>"><div class="field"><label for="q">Find an account</label><input type="search" id="q" name="q" value="<?= e($query) ?>" placeholder="Name, username, or email"></div><button>Search accounts</button></form>
 <?php if ($pending): ?><p class="form-note">Choose Approve to let someone log in. Reject keeps the account unapproved; it is not erased and stays available for review.</p><?php endif;
 $params=[];$where=$pending ? ['is_approved=0'] : ['1=1'];
-if ($query) { $where[]='(first_name LIKE ? OR last_name LIKE ? OR username LIKE ? OR email LIKE ?)';$params=array_fill(0,4,'%'.$query.'%'); }
+if ($query) { $where[]="(first_name LIKE ? OR last_name LIKE ? OR username LIKE ? OR email LIKE ? OR CONCAT_WS(' ', first_name, last_name) LIKE ?)";$params=array_fill(0,5,'%'.$query.'%'); }
 $stmt=$conn->prepare('SELECT * FROM users WHERE '.implode(' AND ',$where).' ORDER BY created_at DESC,id DESC LIMIT 21 OFFSET '.$offset);$stmt->execute($params);$users=$stmt->get_result()->fetch_all(MYSQLI_ASSOC);$hasNext=count($users)>20;$users=array_slice($users,0,20);
 if (!$users) empty_state($pending ? 'No accounts need review.' : 'No accounts found.',$query ? 'Try another name, username, or email.' : 'New registrations will appear here.','/admin_home.php','Back to Admin');
 echo '<div class="account-list">';

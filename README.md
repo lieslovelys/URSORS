@@ -126,10 +126,42 @@ additional security and web-server configuration, as described in the
 
 ## Run in Codespaces
 
+### Tuwing bubuksan ulit ang project
+
+Sa terminal, i-start muna ang database bago ang website:
+
 ```bash
 cd /workspaces/URSORS
 sudo service mariadb start
 pnpm dev
+```
+
+Panatilihing bukas ang terminal habang ginagamit ang website. Para ihinto ang
+website, pindutin ang **Ctrl+C**. Maaari ring gamitin ang `npm run dev` sa halip
+na `pnpm dev`.
+
+### Kapag “Something went wrong” / database connection refused
+
+Sa **bagong terminal**, patakbuhin:
+
+```bash
+cd /workspaces/URSORS
+sudo service mariadb start
+sudo service mariadb status
+mariadb -uroot urs_sors -e "SELECT 1 AS database_ok;"
+```
+
+Kapag may result na `database_ok = 1`, i-refresh ang browser. Kung running na
+ang database pero hindi pa rin makakonekta, subukan:
+
+```bash
+sudo service mariadb restart
+```
+
+Para makita ang detalye ng error:
+
+```bash
+tail -n 50 /workspaces/URSORS/var/log/app.log
 ```
 
 Open forwarded port **8000** (or `http://localhost:8000`). `pnpm dev` uses
@@ -140,10 +172,14 @@ is required for friendly missing-page responses and protected support folders.
 
 Database settings are only in `config.php`: `localhost`, database `urs_sors`,
 user `root`, empty password. The existing database has already been migrated.
-For another existing copy, apply the non-destructive migration once:
+For another existing copy, apply both non-destructive migrations before starting
+the website (the second migration enables notification Archive/Restore):
 
 ```bash
+cd /workspaces/URSORS
+sudo service mariadb start
 mariadb -uroot urs_sors < Database/migrations/001_preserve_content.sql
+mariadb -uroot urs_sors < Database/migrations/002_notification_archive.sql
 ```
 
 **Do not reimport `Database/urs_sors.sql` over an existing database.**
@@ -153,8 +189,10 @@ not stored in git. Each file can be up to **10 MB**; the dev command sets PHP's
 upload limits to match. Raw PHP errors are hidden; details are logged in
 `var/log/app.log` (excluded from git and blocked by the router).
 
-The UX redesign requires **no new migration, columns, or tables**. The migration
-above belongs to the earlier technical repair, not this redesign.
+Notification archiving requires `002_notification_archive.sql`, which adds
+`notifications.is_archived` without deleting existing notifications. Both
+migrations have already been applied in this workspace; do not reimport the
+original SQL export when restarting the project.
 
 ## Checks
 

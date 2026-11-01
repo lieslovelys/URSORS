@@ -5,7 +5,7 @@ $root = __DIR__;
 $file = realpath($root . $path);
 $blocked = preg_match('~(?:^|/)(?:\.[^/]*|_unused|Database|includes|scripts|docs|var|node_modules)(?:/|$)~i', $path)
     || in_array($path, ['/config.php','/router.php','/package.json','/pnpm-lock.yaml'], true);
-if ($blocked || ($file && !str_starts_with($file, $root . '/'))) {
+if ($blocked || ($file && $file !== $root && !str_starts_with($file, $root . '/'))) {
     require $root . '/includes/bootstrap.php';
     fail_request('Choose a page from the menu to continue.', 404);
 }
