@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resources | URS S.O.R.S</title>
+    <link rel="icon" type="image/ico" href="/assets/images/title_icon.png">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/home_sections_style.css">
+</head>
+
+<style>
+    .container{
+        margin-top: 60px;
+    }
+</style>
+
+<body>
+
+    <!-- Navigation Bar with Search Form -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="/course_page.php"><img src="/assets/images/sors_logo.png" alt=""></a>
+            </div>
+                
+                <div class="nav-icons">
+                    <a href="/course_page.php" class="nav-item">
+                        <span class="material-icons" alt="Home">home</span>
+                    </a>
+                    <a href="/ranking_board.php" class="nav-item">
+                        <span class="material-icons">leaderboard</span>
+                    </a>
+                    <a href="/profile.php" class="nav-item">
+                        <span class="material-icons">person</span>
+                    </a>
+                </div>
+
+                
+                <a href="/notifications.php" class="notification-icon">
+                    <span class="material-icons" >notifications</span> 
+                </a>
+                <p class="notif-count"><strong><?php echo $notification_count; ?></strong></p>
+                
+                
+                <span class="material-icons menu-button" id="menu-button">menu</span>
+        </div> 
+            
+            
+        <div class="dropdown-menu" id="dropdown-menu">
+            <ul>
+                <li><a href="/course_page.php"><i class=""></i> Home </a></li>
+                <li><a href="/profile.php"><i class=""></i> Profile </a></li>
+                <li><a href="/ranking_board.php"><i class=""></i> Rank Board </a></li>
+                
+                <li><a href="/logout.php"><i class=""></i> Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    
+    <div class="container">
+        <a href="ce_subject_class_page.html" ><span class="material-icons back-button">arrow_back</span></a>
+
+        <div class="flashcard-container">
+            <a href="/course_page.php?course=ce_elect&amp;subject=Advanced+Structural+Design" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Advanced Structural Design</h3>
+                    <p>BsCE</p>
+                </div>
+            </a>
+
+            <a href="/course_page.php?course=ce_elect&amp;subject=Building+Information+Modeling" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Building Information Modeling</h3>
+                    <p>BsCE</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="flashcard-container">
+            <a href="/course_page.php?course=ce_elect&amp;subject=Coastal+and+Port+Engineering" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Coastal and Port Engineering</h3>
+                    <p>BsCE</p>
+                </div>
+            </a>
+        
+
+            <a href="/course_page.php?course=ce_elect&amp;subject=Construction+Safety+and+Health" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Sonstruction Safety and Health</h3>
+                    <p>BsCE</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="flashcard-container">
+            <a href="/course_page.php?course=ce_elect&amp;subject=Earthquake+Engineering" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Earthquake Engineering</h3>
+                    <p>BsCE</p>
+                </div>
+            </a>
+        
+
+            <a href="/course_page.php?course=ce_elect&amp;subject=Green+Building+Design" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Green Building Design</h3>
+                    <p>BsCE</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="flashcard-container">
+            <a href="/course_page.php?course=ce_elect&amp;subject=Urban+Planning+and+Development" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>Urban Planning Development</h3>
+                    <p>BsCE</p>
+                </div>
+            </a>
+        
+
+            <a href="ce_elect.html" class="flashcard">
+                <div class="flashcard-content">
+                    <span class="material-icons flashcard-icon">book</span>
+                    <h3>...</h3>
+                    <p>...</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+    
+    
+    
+
+    <!-- <a href="feed.php?section=Sports&sub_section=Football&nested_sub_section=Teams&deep_sub_section=PlayerProfiles">Player Profiles</a> -->
+        
+  
+
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuButton = document.getElementById('menu-button');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+
+        menuButton.addEventListener('click', () => {
+            // Toggle the dropdown menu visibility
+            dropdownMenu.style.display =
+                dropdownMenu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close the dropdown menu if clicked outside
+        document.addEventListener('click', (event) => {
+            if (!menuButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+    });
+</script>
+</html>

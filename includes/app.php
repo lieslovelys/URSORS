@@ -8,6 +8,17 @@ if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 function fail_request(string $message, int $status = 400): never
 {
     http_response_code($status);
+    if (defined('SORS_APP') && function_exists('page_header')) {
+        if (in_array(basename($_SERVER['SCRIPT_NAME'] ?? ''), ['add_post.php', 'get_posts.php'], true)) {
+            header('Content-Type: application/json');
+            exit(json_encode(['status' => 'error', 'message' => $message]));
+        }
+        page_header($status === 404 ? 'Page not found' : 'Please try again');
+        heading($status === 404 ? 'We could not find that page.' : 'We could not finish that.', $message);
+        echo '<div class="actions"><a class="button" href="' . (!empty($_SESSION['user_id']) ? '/welcome.php' : '/login.php') . '">Go back Home</a><a class="button secondary" href="/help.php">Get help</a></div>';
+        page_footer();
+        exit;
+    }
     exit(htmlspecialchars($message, ENT_QUOTES, 'UTF-8'));
 }
 function feed_page(): string
@@ -67,7 +78,7 @@ function can_post(mysqli $conn): void
     $stmt = $conn->prepare('SELECT can_post FROM users WHERE id = ?');
     $stmt->bind_param('i', $_SESSION['user_id']);
     $stmt->execute();
-    if (!(int) ($stmt->get_result()->fetch_assoc()['can_post'] ?? 0)) fail_request('Your posting permission is disabled.', 403);
+    if (!(int) ($stmt->get_result()->fetch_assoc()['can_post'] ?? 0)) fail_request('Posting is turned off for your account. Please contact an admin.', 403);
 }
 function uploaded_file(string $field, string $folder, bool $imageOnly = false): ?string
 {

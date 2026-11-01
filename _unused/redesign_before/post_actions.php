@@ -1,0 +1,20 @@
+<?php
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_login();
+require_post();
+if (!in_array($_SESSION['role'], ['teacher', 'admin'], true)) fail_request('Only teachers and admins can archive or restore posts.', 403);
+$postId = (int) ($_POST['post_id'] ?? 0);
+$action = $_POST['action'] ?? '';
+if (!in_array($action, ['archive', 'restore'], true)) fail_request('Invalid action.');
+$stmt = $conn->prepare('SELECT user_id FROM posts WHERE id = ?');
+$stmt->bind_param('i', $postId);
+$stmt->execute();
+$post = $stmt->get_result()->fetch_assoc();
+if (!$post) fail_request('Post not found.', 404);
+$archived = $action === 'archive' ? 1 : 0;
+$stmt = $conn->prepare('UPDATE posts SET is_archived = ? WHERE id = ?');
+$stmt->bind_param('ii', $archived, $postId);
+$stmt->execute();
+notify_user($conn, (int) $post['user_id'], 'Your post was ' . ($archived ? 'archived.' : 'restored.'));
+redirect_back();

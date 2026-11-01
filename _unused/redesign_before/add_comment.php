@@ -1,0 +1,20 @@
+<?php
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_login();
+require_post();
+$postId = (int) ($_POST['post_id'] ?? 0);
+$userId = (int) $_SESSION['user_id'];
+$content = trim($_POST['comment_content'] ?? $_POST['content'] ?? '');
+if ($content === '') fail_request('Comment content is required.');
+$stmt = $conn->prepare('SELECT user_id FROM posts WHERE id = ? AND is_archived = 0');
+$stmt->bind_param('i', $postId);
+$stmt->execute();
+$post = $stmt->get_result()->fetch_assoc();
+if (!$post) fail_request('Post not found.', 404);
+$file = uploaded_file('comment_file', 'comments');
+$stmt = $conn->prepare('INSERT INTO comments (post_id, user_id, content, file_path) VALUES (?, ?, ?, ?)');
+$stmt->bind_param('iiss', $postId, $userId, $content, $file);
+$stmt->execute();
+if ($post['user_id'] != $userId) notify_user($conn, (int) $post['user_id'], $_SESSION['username'] . ' commented on your post.');
+redirect_back();
