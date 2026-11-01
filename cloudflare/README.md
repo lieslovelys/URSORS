@@ -16,7 +16,7 @@ This is an isolated replacement in progress for the PHP application. A public de
 ## Implemented
 
 - Pending student/teacher registration, approved-account login and logout.
-- PBKDF2-SHA256 password hashing (600,000 iterations), random hashed session tokens, one-day expiry, same-origin JSON mutations and login/registration throttling.
+- Scrypt password hashing (N=32768, r=8, p=3, random salt), random hashed session tokens, one-day expiry, same-origin JSON mutations and login/registration throttling. Node.js compatibility is enabled. The earlier PBKDF2-600000 approach exceeded Cloudflare's production iteration cap; legacy local hashes remain verifiable locally, but must not be imported into production.
 - Catalogue-based subject filters, General/Professor Only feeds, posts and HTTPS resource links.
 - Comments, likes, contribution ranking, teacher/admin archive/restore and administrator approval/posting controls.
 - Original branding, backgrounds and shared layout; separate login/register screens, home, guided program/category/subject navigation, profile summary and help. Mobile navigation includes additional tools through Profile.
@@ -83,6 +83,6 @@ No paid subscription or R2 is required for this links-only scope. Keep the repos
 
 Never deploy the repository root: it contains database exports and PHP/support files. Only `public/` is static website content. No GitHub push, cloud resource creation or deployment has been performed by the local implementation steps.
 
-PBKDF2 was exercised in local Workers runtime, but deployed Workers Free CPU behavior must be measured before launch. Never reduce password security to bypass quotas. Account recovery is still a launch blocker for real users.
+Live scrypt registration, pending-login rejection, approved login, authenticated session and logout were verified with a temporary synthetic account that was then removed. No owner credentials were used. Continue monitoring production Free-plan resource limits. Account recovery remains unavailable; do not import legacy PBKDF2 accounts into production.
 
 External resource links are not private storage. Users must configure sharing permissions with the external provider. Links are opened by the browser; the API does not fetch them.

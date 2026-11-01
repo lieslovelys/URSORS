@@ -1,4 +1,4 @@
-import { fail, text, resourceLink, validateAccount, randomToken, digest, hashPassword, verifyPassword, checkOrigin } from '../lib/security.js';
+import { fail, text, resourceLink, validateAccount, randomToken, digest, hashPassword, verifyPassword, checkOrigin, DUMMY_PASSWORD_HASH } from '../lib/security.js';
 import { AVATARS } from '../../public/avatars.js';
 
 const publicUser = u => ({ id: u.id, username: u.username, name: u.name, role: u.role, approved: u.approved, can_post: u.can_post, avatar: u.avatar || 'default' });
@@ -59,7 +59,7 @@ export async function onRequest({ request, env }) {
       const password = body.password;
       const user = await query(db, 'SELECT * FROM users WHERE username=?', username).first();
       // Use the same expensive derivation even when the username does not exist.
-      const dummy = `pbkdf2$600000$${'0'.repeat(64)}$${'0'.repeat(64)}`;
+      const dummy = DUMMY_PASSWORD_HASH;
       const valid = await verifyPassword(password, user?.password || dummy);
       if (!valid || !user?.approved) fail('Login failed. Check your credentials and account approval.', 401);
       const token = randomToken();

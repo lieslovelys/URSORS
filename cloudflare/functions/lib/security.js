@@ -1,3 +1,5 @@
+import { pbkdf2, scrypt } from 'node:crypto';
+
 export function fail(message, status = 400) {
   throw Object.assign(new Error(message), { status });
 }
@@ -32,17 +34,39 @@ export async function digest(value) {
   return hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value)));
 }
 async function derive(password, salt, iterations) {
-  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
-  return hex(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: unhex(salt), iterations }, key, 256));
+  return new Promise((resolve, reject) => {
+    pbkdf2(password, unhex(salt), iterations, 32, 'sha256', (error, key) => {
+      if (error) reject(error); else resolve(hex(key));
+    });
+  });
 }
 export async function hashPassword(password) {
   const salt = randomToken();
-  return `pbkdf2$600000$${salt}$${await derive(password, salt, 600000)}`;
+  return `scrypt$32768$8$3$${salt}$${await deriveScrypt(password, salt)}`;
 }
+function deriveScrypt(password, salt) {
+  // OWASP's N=2^15, r=8, p=3 alternative: about 32 MiB of working memory.
+  return new Promise((resolve, reject) => {
+    scrypt(password, unhex(salt), 32, { N: 32768, r: 8, p: 3, maxmem: 64 * 1024 * 1024 }, (error, key) => {
+      if (error) reject(error); else resolve(hex(key));
+    });
+  });
+}
+export const DUMMY_PASSWORD_HASH = `scrypt$32768$8$3$${'0'.repeat(64)}$${'0'.repeat(64)}`;
 export async function verifyPassword(password, encoded) {
-  const [algorithm, count, salt, expected] = encoded.split('$');
-  if (algorithm !== 'pbkdf2' || count !== '600000' || !/^[a-f0-9]{64}$/.test(salt) || !/^[a-f0-9]{64}$/.test(expected)) return false;
-  const actual = await derive(password, salt, Number(count));
+  const parts = encoded.split('$');
+  let actual, expected;
+  if (parts[0] === 'scrypt') {
+    const [algorithm, N, r, p, salt, hash] = parts;
+    if (parts.length !== 6 || N !== '32768' || r !== '8' || p !== '3' || !/^[a-f0-9]{64}$/.test(salt) || !/^[a-f0-9]{64}$/.test(hash)) return false;
+    actual = await deriveScrypt(password, salt); expected = hash;
+  } else {
+    // Keep existing local-preview credentials usable; production had no accounts
+    // before the WebCrypto failure. Do not weaken legacy PBKDF2 parameters.
+    const [algorithm, count, salt, hash] = parts;
+    if (parts.length !== 4 || algorithm !== 'pbkdf2' || count !== '600000' || !/^[a-f0-9]{64}$/.test(salt) || !/^[a-f0-9]{64}$/.test(hash)) return false;
+    actual = await derive(password, salt, Number(count)); expected = hash;
+  }
   let difference = 0;
   for (let i = 0; i < actual.length; i++) difference |= actual.charCodeAt(i) ^ expected.charCodeAt(i);
   return difference === 0;
