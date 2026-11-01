@@ -1,0 +1,88 @@
+# URS SORS — Cloudflare preview
+
+## Deployment status — 2026-11-01
+
+- Public URL: https://ursors.pages.dev
+- Pages project: `ursors`, production branch: `trans`.
+- D1: dedicated `ursors` database; migrations 0001–0004 applied remotely, without importing local accounts or posts.
+- Initial deployment used Wrangler direct upload. GitHub branch `trans` contains the source, but automatic deployments on GitHub push are **not configured**.
+- Live browser checks passed for landing/login navigation and unauthenticated access denial on protected API endpoints. Production registration, password-hashing CPU behavior and authenticated workflows still need verification before general public use.
+- First administrator must register on the live site and be explicitly verified/promoted by the trusted operator; no default password exists.
+
+For future reviewed deployments: `npx wrangler pages deploy public --project-name ursors --branch trans` from this directory. Review unapplied remote migrations separately; never import local test data into production.
+
+This is an isolated replacement in progress for the PHP application. A public deployment exists, but the remaining limitations below still apply. The original PHP application and its data are unchanged.
+
+## Implemented
+
+- Pending student/teacher registration, approved-account login and logout.
+- Scrypt password hashing (N=32768, r=8, p=3, random salt), random hashed session tokens, one-day expiry, same-origin JSON mutations and login/registration throttling. Node.js compatibility is enabled. The earlier PBKDF2-600000 approach exceeded Cloudflare's production iteration cap; legacy local hashes remain verifiable locally, but must not be imported into production.
+- Catalogue-based subject filters, General/Professor Only feeds, posts and HTTPS resource links.
+- Comments, likes, contribution ranking, teacher/admin archive/restore and administrator approval/posting controls.
+- Original branding, backgrounds and shared layout; separate login/register screens, home, guided program/category/subject navigation, profile summary and help. Mobile navigation includes additional tools through Profile.
+- Admin sidebar follows the original order: Home, Pending Accounts, All Accounts, Notifications, Profile, Subjects, Ranking, Admin, Create Account, Archived Posts, Help, Logout. Home is a community feed with account search; Admin remains a separate landing/management page.
+- Notifications for new registrations, approvals, posting permissions, likes, comments and archiving; unread counts and mark-as-read controls. Name editing and approved administrator-created accounts are supported.
+- Notification cards are full-card links: registration notices open the associated pending/all-account record, post notices open the exact post with its discussion, and account-permission notices open Profile. Opening a card marks only the current user's notification read. Archived-post notices show an archived preview only to its owner or moderators. Migration `0004_notification_targets.sql` adds stable account targets and safely backfills unambiguous historical registration notices.
+- Comment owners and administrators can remove comments through soft deletion; other users cannot remove them.
+- Seven bundled preset avatars (Classic plus six colors). Profile avatar selection is saved as an allowlisted ID in D1 and used on the profile, sidebar, posts and comments. No upload, remote image service or R2 subscription is needed. Migration `0003_preset_avatars.sql` preserves existing accounts with Classic as the default.
+- Server-side role/approval checks, prepared SQL statements and text-only rendering of user content.
+
+## Not implemented yet
+
+Account recovery, profile fields beyond display name and preset avatar, pagination beyond initial result limits, full design parity and migration of existing users/content/uploads. Direct uploads are intentionally excluded. Existing PHP profile photos are not imported. Do not replace the production PHP application yet.
+
+## Local development
+
+Requires Node.js 22+.
+
+```bash
+cd cloudflare
+npm ci
+npm run db:local
+npm test
+npm run dev
+```
+
+Open the URL printed by Wrangler. Use HTTP only for localhost; production cookies are Secure under HTTPS. State lives in the ignored `.wrangler/` folder.
+
+For the local API integration checks, start the server with `npm run dev -- --port 8788`, then run `python3 tests/integration.py` in a second terminal. These checks create labelled local test content and leave the test account unapproved with posting disabled. They never access remote D1.
+
+Validation performed: four security unit tests passed; local Workers/D1 integration passed for pending login, role restrictions, cross-origin rejection, URL validation, posts, idempotent likes, comments, disabled posting and approval revocation. A Chromium browser flow passed for separate auth screens, password visibility, subject navigation, publishing, comments, archive/restore, ranking, logout, and no horizontal overflow at desktop/mobile widths. Desktop/mobile home screenshots were captured locally. Original PHP project checks also passed. Deployed Free-plan limits and a full accessibility review remain unverified.
+
+Run browser checks with `npx playwright install chromium` and `npx playwright test`. Tests only use localhost and local D1; they create labelled accounts and disable them afterwards. Screenshots are saved under ignored `test-results/`.
+
+Latest checks: all three browser/API scenarios and four security unit tests passed. Coverage includes all 12 admin sidebar entries, independent community Home/Admin pages, account creation, account search, profile-name changes, comment removal, notification ownership, duplicate-like notification prevention, and immediate access denial after approval revocation. The original PHP project checks still pass. Local migrations 0001 and 0002 are applied; remote D1 has not been modified.
+
+### First administrator (controlled bootstrap)
+
+1. Register your own account through the local website. Use a unique strong password.
+2. As the trusted operator, inspect the local accounts:
+
+```bash
+npx wrangler d1 execute ursors --local --command "SELECT id,username,role,approved FROM users;"
+```
+
+3. Promote only your verified account, replacing `YOUR_ACCOUNT_ID` with its numeric ID:
+
+```bash
+npx wrangler d1 execute ursors --local --command "UPDATE users SET role='admin',approved=1 WHERE id=YOUR_ACCOUNT_ID;"
+```
+
+Never add a public administrator-registration endpoint. Passwords are never placed in this SQL or committed.
+
+## Cloudflare setup — only after preview acceptance
+
+No paid subscription or R2 is required for this links-only scope. Keep the repository private until existing SQL exports/history have had a privacy review.
+
+1. Authenticate Wrangler with `npx wrangler login` on your own device. Do not send passwords/tokens in chat.
+2. Create a D1 database with `npx wrangler d1 create ursors` and put its returned database ID into `wrangler.jsonc` (the ID is not a secret).
+3. Review and apply schema with `npm run db:remote`. This command affects the real database; do not use it against an unrelated database.
+4. Create a Pages project connected to the GitHub repository. Set root directory to `cloudflare`, build command to `npm ci`, and output directory to `public`. Functions remain outside the static output. Bind the production D1 database as `DB`; use a separate database for previews.
+5. Verify configured bindings and authentication in a restricted preview before launch. Bootstrap the remote administrator using the same controlled process with `--remote` instead of `--local`, checking the account ID on that database first.
+6. Verify all authorization, browser/mobile workflows, quotas and missing features before sharing the public link.
+
+Never deploy the repository root: it contains database exports and PHP/support files. Only `public/` is static website content. No GitHub push, cloud resource creation or deployment has been performed by the local implementation steps.
+
+Live scrypt registration, pending-login rejection, approved login, authenticated session and logout were verified with a temporary synthetic account that was then removed. No owner credentials were used. Continue monitoring production Free-plan resource limits. Account recovery remains unavailable; do not import legacy PBKDF2 accounts into production.
+
+External resource links are not private storage. Users must configure sharing permissions with the external provider. Links are opened by the browser; the API does not fetch them.

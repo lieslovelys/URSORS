@@ -1,0 +1,29 @@
+/* Original PHP landing design, scoped so signed-in pages stay unchanged. */
+.landing-page{background:#0b1b4b;color:#102653;font-family:Arial,sans-serif;font-size:16px}
+.landing-page>.site-header,.landing-page>.footer{display:none}
+.landing-page>.page{max-width:none;width:100%;padding:0;margin:0}
+.landing-container,.landing-intro-inner{width:min(1200px,calc(100% - 64px));margin-inline:auto}
+.landing-intro{padding:64px 0;color:#fff;background:linear-gradient(#000b,#000b),url('/assets/images/login_bg.webp') center/cover no-repeat}
+.landing-intro-inner{display:grid;grid-template-columns:240px minmax(0,1fr);gap:40px;align-items:center}
+.landing-seal{width:240px;max-width:100%;height:auto;object-fit:contain}
+.landing-motto{font:italic bold 1.4rem Georgia,serif;color:#c0cff4;margin:0 0 12px}
+.landing-intro h1{font-size:clamp(2rem,4vw,3.5rem);line-height:1.15;margin:0 0 24px;color:#fff}
+.landing-description{max-width:800px;font-size:1.1rem;color:#d4def5}
+.landing-signature{font:italic 1.3rem Georgia,serif;color:#d4def5}
+.landing-intro .actions{gap:14px;margin-top:28px;flex-wrap:wrap}
+.landing-intro .button{padding:12px 26px;background:transparent;border:1px solid #a8b8d6;color:#fff}
+.landing-intro .landing-primary{background:#fff;border-color:#fff;color:#1245a6}
+.landing-intro .button:hover{background:#dae5ff;color:#102653}
+.landing-how{padding:48px 0 60px;background:#0b1b4b;color:#fff}
+.landing-section-label{margin:0 0 10px;font-size:.72rem;font-weight:bold;letter-spacing:.16em;color:#cbd6ff}
+.landing-how h2{font:bold clamp(1.8rem,3vw,2.5rem)/1.15 Georgia,serif;margin:0 0 32px;color:#fff}
+.landing-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid #ffffff40}
+.landing-steps article{padding:28px 28px 8px;border-right:1px solid #ffffff40}
+.landing-steps article:first-child{padding-left:0}.landing-steps article:last-child{border-right:0}
+.landing-steps article>span{font-size:.75rem;letter-spacing:.1em;font-weight:bold;color:#cbd6ff}
+.landing-steps h3{font-size:1.2rem;margin:18px 0 8px;color:#fff}.landing-steps p{color:#e0e6ff;margin:0}
+.landing-footer{padding:28px 0 12px;background:linear-gradient(#000d,#000d),url('/assets/images/login_bg.webp') center/cover no-repeat;color:#fff}
+.landing-footer-info{display:grid;grid-template-columns:1.4fr 1fr;gap:40px}
+.landing-footer h2{font-size:1.15rem;margin:0 0 10px;color:#fff}.landing-footer p{color:#cbd8f3;margin:0 0 14px}.landing-footer a{color:#fff}
+.landing-footer .landing-copyright{border-top:1px solid #ffffff26;padding-top:14px;margin-top:18px;font-size:.85rem}
+@media(max-width:700px){.landing-container,.landing-intro-inner{width:calc(100% - 36px)}.landing-intro{padding:32px 0}.landing-intro-inner{grid-template-columns:1fr;gap:20px}.landing-seal{width:180px}.landing-motto{font-size:1.05rem}.landing-steps,.landing-footer-info{grid-template-columns:1fr;gap:16px}.landing-how{padding:28px 0}.landing-steps article,.landing-steps article:first-child{padding:20px 0;border-right:0;border-bottom:1px solid #ffffff40}.landing-steps article:last-child{border-bottom:0}}
