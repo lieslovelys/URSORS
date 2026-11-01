@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>URS SORS · Learn. Share. Help each other.</title>
+  <link rel="icon" href="/assets/images/title_icon.png">
+  <link rel="stylesheet" href="/assets/legacy.css"><link rel="stylesheet" href="/assets/layout.css"><link rel="stylesheet" href="/assets/cloudflare.css">
+  <script src="/app.js" type="module"></script>
+</head>
+<body class="auth-page auth-login">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header"><div class="header-inner">
+    <a class="brand" href="#home"><img src="/assets/images/sors_logo.png" alt="URS SORS home"><small>Learn. Share. Help each other.</small></a>
+    <span class="mobile-page-title" id="mobile-title">Home</span>
+    <a class="sidebar-account" id="account" href="#profile" hidden><img src="/assets/images/default_profile.svg" alt="" width="48" height="48"><span class="sidebar-account-details"><strong id="account-name"></strong><span id="account-username"></span><small id="account-role"></small></span></a>
+    <nav id="site-nav" class="nav" aria-label="Main navigation"></nav>
+  </div></header>
+  <main id="main" class="page narrow" tabindex="-1">
+    <p id="status" class="flash" role="status" aria-live="polite" hidden></p>
+    <section id="auth">
+      <section id="login-screen"><div class="page-head"><h1>LOGIN</h1></div>
+        <section class="panel"><form id="login">
+          <div class="field"><label for="login-user">Username</label><input id="login-user" name="username" autocomplete="username" required maxlength="50"><span class="hint">Enter the username you registered.</span></div>
+          <div class="field"><label for="login-password">Password</label><div class="password-row"><input id="login-password" name="password" type="password" autocomplete="current-password" required maxlength="128"><button type="button" class="secondary" data-password="login-password" aria-pressed="false">Show</button></div><span class="hint">Capital and small letters matter.</span></div>
+          <button type="submit">Log in</button>
+        </form></section><p>New here? <a href="#register">Create an account</a></p><p><a href="#help">Can't log in? Get help.</a></p>
+      </section>
+      <section id="register-screen" hidden><div class="page-head"><h1>REGISTER</h1></div><p class="registration-note">After registering, please wait for admin approval before logging in.</p>
+        <section class="panel"><form id="register">
+          <div class="field"><label for="reg-name">Full name</label><input id="reg-name" name="name" autocomplete="name" required maxlength="150"><span class="hint">Use the name your school knows you by.</span></div>
+          <div class="field"><label for="reg-email">Email address</label><input id="reg-email" name="email" type="email" autocomplete="email" required maxlength="100"></div>
+          <div class="field"><label for="reg-role">I am a</label><select id="reg-role" name="role" required><option value="">Choose your role</option><option value="student">Student</option><option value="teacher">Teacher</option></select></div>
+          <div class="field"><label for="reg-user">Username</label><input id="reg-user" name="username" autocomplete="username" required minlength="3" maxlength="50" pattern="[a-zA-Z0-9_]+"><span class="hint">Letters, numbers and underscores only.</span></div>
+          <div class="field"><label for="reg-password">Password</label><div class="password-row"><input id="reg-password" name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="128"><button type="button" class="secondary" data-password="reg-password" aria-pressed="false">Show</button></div><span class="hint">Use 12–128 characters. Do not reuse another account's password.</span></div>
+          <button type="submit">Send for approval</button>
+        </form></section><p>Already registered? <a href="#login">Log in</a></p>
+      </section>
+      <section id="registered-screen" class="panel" hidden><h1>Your account was sent for approval.</h1><p>Your school admin needs to check your details before you can log in.</p><ol class="guide-list"><li>Wait for your admin to approve your account.</li><li>There is no automatic approval email. Contact your admin for an update.</li><li>Once approved, log in with your chosen username and password.</li></ol><a class="button" href="#login">Go to login</a></section>
+    </section>
+    <section id="workspace" hidden>
+      <section data-page="home"><div class="home-signature"><h1 class="community-signature">Share knowledge. Build futures.</h1></div>
+        <form id="account-search" class="account-search"><label class="sr-only" for="search-query">Search account</label><input id="search-query" name="q" placeholder="Search account" required maxlength="50"><button type="submit" aria-label="Search accounts">⌕</button></form><div id="search-results" class="people-results" aria-live="polite"></div>
+        <div class="section-heading"><div><h2>Community posts</h2><p class="muted">See what others are sharing · Newest first</p></div><a class="button secondary" href="#subjects">Browse Subjects</a></div><div id="community-feed" aria-live="polite"></div>
+      </section>
+      <section data-page="subjects" hidden><div class="page-head"><h1>Subjects</h1><p class="muted">Choose your program to find the right learning resources.</p></div><div id="subject-browser"></div></section>
+      <section data-page="feed" hidden>
+        <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="#subjects">Subjects</a><span> / </span><span id="feed-category"></span></nav>
+        <div class="page-head"><h1 id="feed-title">Resources</h1><p class="muted">Share resources, ask questions, and learn together.</p></div>
+        <div class="subnav" id="audience-tabs"><button type="button" data-audience="general">General</button><button type="button" data-audience="professor" class="secondary">Professor Only</button></div>
+        <p id="feed-permission" class="hint"></p>
+        <form id="publish" class="panel"><h2>Share a resource</h2><div class="field"><label for="post-content">What would you like to share?</label><textarea id="post-content" name="content" required maxlength="5000" rows="3" placeholder="Share a useful resource or start a discussion…"></textarea></div><div class="field"><label for="post-link">Resource link <span class="hint">(optional)</span></label><input id="post-link" name="resource_url" type="url" placeholder="https://drive.google.com/…" maxlength="2048"><span class="hint">Paste an HTTPS link. Make sure your classmates have permission to open it.</span></div><button type="submit">Publish post</button></form>
+        <div class="section-heading"><h2>Latest resources</h2><button id="refresh" type="button" class="secondary">Refresh</button></div><section aria-label="Resource feed" id="feed" aria-live="polite"></section>
+      </section>
+      <section data-page="admin" hidden>
+        <div class="page-head"><h1>Admin Portal</h1><p class="muted">Manage your academic community, accounts, and shared resources.</p></div>
+        <section class="hero"><p class="eyebrow">ADMINISTRATOR WORKSPACE</p><h2 id="admin-greeting">Welcome, administrator.</h2><p>Review new registrations, manage posting permissions, and moderate resources.</p><a class="button" href="#accounts">Review pending accounts →</a></section>
+        <div class="grid">
+          <a class="card" href="#accounts"><strong>Account management</strong><span>Approve registrations and enable or restrict posting.</span><span class="card-action">Manage accounts →</span></a>
+          <a class="card" href="#archives"><strong>Archived posts</strong><span>Review archived content and restore resources.</span><span class="card-action">Review archives →</span></a>
+          <a class="card" href="#subjects"><strong>Subjects and resources</strong><span>Browse subject feeds, publish resources, and moderate posts.</span><span class="card-action">Browse subjects →</span></a>
+          <a class="card" href="#ranking"><strong>Community contributions</strong><span>View contributions across approved community accounts.</span><span class="card-action">View ranking →</span></a>
+        </div>
+      </section>
+      <section data-page="accounts" hidden><div class="page-head"><h1>Account management</h1><p class="muted">Review registrations and manage publishing access.</p></div><div class="panel"><label for="account-filter">Show accounts</label><select id="account-filter"><option value="pending">Waiting for approval</option><option value="all">All accounts</option></select><button id="load-users" type="button" class="secondary">Refresh accounts</button></div><div id="users"></div></section>
+      <section data-page="profile" hidden><div class="page-head"><h1>My profile</h1><p class="muted">Your community account.</p></div><section class="panel profile-summary"><img src="/assets/images/default_profile.svg" width="88" height="88" alt="Default profile image"><div><h2 id="profile-name"></h2><p id="profile-details"></p><p class="hint">Photo uploads are not available in this links-only version.</p></div></section><form id="edit-profile" class="panel"><h2>Edit profile</h2><div class="field"><label for="profile-input">Full name</label><input id="profile-input" name="name" required maxlength="150"></div><button type="submit">Save profile</button></form><button id="logout" type="button" class="secondary">Log out</button></section>
+      <section data-page="notifications" hidden><div class="page-head"><h1>Notifications</h1><p class="muted">Updates about your account and shared resources.</p></div><div class="actions"><button id="read-notifications" type="button" class="secondary">Mark all as read</button></div><div id="notification-list"></div></section>
+      <section data-page="create-account" hidden><div class="page-head"><h1>Create an account</h1><p class="muted">This account will be approved and ready to use.</p></div><form id="create-account" class="panel">
+        <div class="field"><label for="create-name">Full name</label><input id="create-name" name="name" required maxlength="150" autocomplete="off"></div>
+        <div class="field"><label for="create-email">Email address</label><input id="create-email" name="email" type="email" required maxlength="100" autocomplete="off"></div>
+        <div class="field"><label for="create-role">Role</label><select id="create-role" name="role"><option value="student">Student</option><option value="teacher">Teacher</option><option value="admin">Admin</option></select></div>
+        <div class="field"><label for="create-username">Username</label><input id="create-username" name="username" required minlength="3" maxlength="50" pattern="[a-zA-Z0-9_]+" autocomplete="off"></div>
+        <div class="field"><label for="create-password">Initial password</label><div class="password-row"><input id="create-password" name="password" type="password" required minlength="12" maxlength="128" autocomplete="new-password"><button type="button" class="secondary" data-password="create-password" aria-pressed="false">Show</button></div><span class="hint">12–128 characters. Share credentials privately with the account owner.</span></div><button type="submit">Create approved account</button>
+      </form></section>
+      <section data-page="ranking" hidden><div class="page-head"><h1>Community ranking</h1><p class="muted">Contributions are counted by non-archived posts—not grades.</p></div><div id="ranking-list"></div></section>
+      <section data-page="archives" hidden><div class="page-head"><h1>Archived posts</h1><p class="muted">Review archived resources and restore them to the subject feed.</p></div><div id="archive-list"></div></section>
+    </section>
+    <section id="help-screen" hidden><div class="page-head"><h1>How can we help?</h1><p class="muted">A quick guide to learning and sharing.</p></div><section class="panel"><h2>I can't log in</h2><p>Check your username and password. New accounts need school administrator approval. Contact your administrator if you are still waiting.</p><h2>How do I share a file?</h2><p>Upload it to your preferred file service, configure its sharing permissions, and paste the HTTPS link into a subject post. Direct uploads are not supported here.</p><h2>General or Professor Only?</h2><p>Everyone can read both feeds. Only teachers and administrators can publish in Professor Only.</p><h2>About this version</h2><p>This is a local Cloudflare preview. Notifications, account recovery and several administrative tools are still being migrated. Existing PHP accounts and files have not been imported.</p></section></section>
+  </main>
+  <footer class="footer"><strong>URS SORS</strong> · A place to learn and share.<br><a href="#help">Need help? Start here.</a><small class="preview-label">Cloudflare preview · Links-only attachments</small></footer>
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title"><img class="confirm-logo" src="/assets/images/sors_logo.png" alt="URS SORS"><h2 id="confirm-title">Please confirm</h2><p id="confirm-description"></p><div class="actions"><button type="button" class="secondary" id="confirm-cancel">Cancel</button><button type="button" id="confirm-yes">Yes, continue</button></div></dialog>
+</body></html>
