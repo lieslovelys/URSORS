@@ -1,6 +1,8 @@
 <?php
-session_start();
-include 'config.php';
+
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_admin();
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     die("Access Denied. Admins only.");
@@ -11,8 +13,8 @@ $sql = "SELECT COUNT(*) AS unread_count FROM notifications WHERE user_id = ? AND
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
-$result = $stmt->get_result();
-$notification_count = $result->fetch_assoc()['unread_count'];
+$notification_result = $stmt->get_result();
+$notification_count = $notification_result->fetch_assoc()['unread_count'];
 
 // Fetch pending accounts
 $sql = "SELECT id, first_name, middle_name, last_name, username, role FROM users WHERE is_approved = 0";
@@ -20,13 +22,13 @@ $result = $conn->query($sql);
 
 // Handle approval or rejection
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user_id = $_POST['user_id'];
-    $action = $_POST['action'];
+    $user_id = (int) ($_POST['user_id'] ?? 0);
+    $action = $_POST['action'] ?? '';
 
     if ($action === 'approve') {
         $update_sql = "UPDATE users SET is_approved = 1 WHERE id = ?";
     } elseif ($action === 'reject') {
-        $update_sql = "DELETE FROM users WHERE id = ?";
+        $update_sql = "UPDATE users SET is_approved = 0 WHERE id = ? AND role <> 'admin'";
     } else {
         die("Invalid action.");
     }
@@ -35,8 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("i", $user_id);
 
     if ($stmt->execute()) {
-        $message = $action === 'approve' ? "User approved successfully." : "User rejected and removed.";
-        echo "<script>alert('$message'); window.location.href='admin_pendings.php';</script>";
+        notify_user($conn, $user_id, $action === 'approve' ? 'Your account has been approved.' : 'Your account remains unapproved. Contact an admin.');
+        header('Location: /admin_pendings.php');
+        exit;
     } else {
         echo "Error processing request: " . $stmt->error;
     }
@@ -52,9 +55,9 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <title>Pendings | Admin</title>
-    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link rel="icon" type="image/ico" href="/assets/images/title_icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="/Admin/FrontEnd/admin.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
     <style>
         body{
             margin-top: 80px;
@@ -80,7 +83,7 @@ $conn->close();
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <a href="admin_home.php"><img src="/img/sors_logo.png" alt=""></a>
+                <a href="admin_home.php"><img src="/assets/images/sors_logo.png" alt=""></a>
             </div>
                 
                 <div class="nav-icons">

@@ -1,10 +1,12 @@
 <?php
-session_start();
-include 'config.php'; // Database connection file
+
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_login(); // Database connection file
 
 // Redirect to login if the user is not logged in
 if (!isset($_SESSION['username'])) {
-    header("Location: /Admin/FrontEnd/login.html");
+    header("Location: /login.html");
     exit;
 }
 
@@ -28,8 +30,8 @@ $sql = "SELECT COUNT(*) AS unread_count FROM notifications WHERE user_id = ? AND
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
-$result = $stmt->get_result();
-$notification_count = $result->fetch_assoc()['unread_count'];
+$notification_result = $stmt->get_result();
+$notification_count = $notification_result->fetch_assoc()['unread_count'];
 
 
 // Fetch posts based on the selected section
@@ -168,7 +170,7 @@ $selected_deep_sub_section = isset($_GET['deep_sub_section']) ? $_GET['deep_sub_
 // Fetch posts based on selected section, subsection, and nested subsection
 $where_clause = "posts.is_archived = 0"; // Exclude archived posts
 
-if (!empty($selected_section)) {
+if (!empty($selected_section) && $selected_section !== 'All') {
     $where_clause .= " AND posts.section = '" . $conn->real_escape_string($selected_section) . "'";
 }
 
@@ -203,10 +205,10 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <title>Resources | URS S.O.R.S</title>
-    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link rel="icon" type="image/ico" href="/assets/images/title_icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="/Admin/FrontEnd/home_sections/home_sections_style.css">
-    <link rel="stylesheet" href="/Admin/FrontEnd/style.css">
+    <link rel="stylesheet" href="/assets/css/home_sections_style.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
     <style>
         
     </style>
@@ -217,17 +219,17 @@ $result = $conn->query($sql);
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <a href="/Admin/FrontEnd/home_sections/course_page.php"><img src="/img/sors_logo.png" alt=""></a>
+                <a href="/course_page.php"><img src="/assets/images/sors_logo.png" alt=""></a>
             </div>
                 
                 <div class="nav-icons">
-                    <a href="/Admin/FrontEnd/home_sections/course_page.php" class="nav-item">
+                    <a href="/course_page.php" class="nav-item">
                         <span class="material-icons" alt="Home">home</span>
                     </a>
-                    <a href="/Admin/BackEnd/ranking_board.php" class="nav-item">
+                    <a href="/ranking_board.php" class="nav-item">
                         <span class="material-icons">leaderboard</span>
                     </a>
-                    <a href="/Admin/BackEnd/profile.php" class="nav-item">
+                    <a href="/profile.php" class="nav-item">
                         <span class="material-icons">person</span>
                     </a>
                 </div>
@@ -245,10 +247,10 @@ $result = $conn->query($sql);
             
         <div class="dropdown-menu" id="dropdown-menu">
             <ul>
-                <li><a href="/Admin/FrontEnd/home_sections/course_page.php"><i class=""></i> Home </a></li>
-                <li><a href="/Admin/BackEnd/profile.php"><i class=""></i> Profile </a></li>
-                <li><a href="/Admin/BackEnd/ranking_board.php"><i class=""></i> Rank Board </a></li>
-                <li><a href="/Admin/BackEnd/logout.php"><i class=""></i> Logout</a></li>
+                <li><a href="/course_page.php"><i class=""></i> Home </a></li>
+                <li><a href="/profile.php"><i class=""></i> Profile </a></li>
+                <li><a href="/ranking_board.php"><i class=""></i> Rank Board </a></li>
+                <li><a href="/logout.php"><i class=""></i> Logout</a></li>
             </ul>
         </div>
     </nav>
@@ -263,7 +265,7 @@ $result = $conn->query($sql);
         
 
         <!-- Post Form -->
-            <?php if ($user['can_post'] == 0): ?>
+            <?php if ($user['can_post'] == 0 || ($selected_deep_sub_section === 'Professor Only' && $_SESSION['role'] === 'student')): ?>
             <div class="post-form-container">
                 <h2>Create New Post</h2>
                 <p style="color: red;">You are currently restricted from posting. Please contact an admin for assistance.</p>
@@ -276,9 +278,9 @@ $result = $conn->query($sql);
                         
                         <!-- Automatically set section, sub_section, nested_sub_section, and deep_sub_section -->
                         <input type="hidden" name="section" value="<?php echo htmlspecialchars($selected_section); ?>">
-                        <input type="hidden" name="sub_section" value="<?php echo htmlspecialchars($selected_sub_section); ?>">
-                        <input type="hidden" name="nested_sub_section" value="<?php echo htmlspecialchars($selected_nested_sub_section); ?>">
-                        <input type="hidden" name="deep_sub_section" value="<?php echo htmlspecialchars($selected_deep_sub_section); ?>">
+                        <input type="hidden" name="sub_section" value="<?php echo htmlspecialchars($selected_sub_section ?? ''); ?>">
+                        <input type="hidden" name="nested_sub_section" value="<?php echo htmlspecialchars($selected_nested_sub_section ?? ''); ?>">
+                        <input type="hidden" name="deep_sub_section" value="<?php echo htmlspecialchars($selected_deep_sub_section ?? ''); ?>">
 
                         
                         <div class="icon-container">
@@ -316,9 +318,9 @@ $result = $conn->query($sql);
                         </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($post['image_path'])): ?>
+                    <?php if (!empty($post['file_path'])): ?>
                         <div>
-                            <img src="<?php echo htmlspecialchars($post['file_path']); ?>" alt="Uploaded File" style="max-width: 100%; height: auto;">
+                            <a href="<?php echo htmlspecialchars($post['file_path'] ?? ''); ?>" download>Download attachment</a>
                         </div>
                     <?php endif; ?>
                     
@@ -354,7 +356,7 @@ $result = $conn->query($sql);
                                 $sql = "SELECT comments.*, users.username 
                                         FROM comments 
                                         JOIN users ON comments.user_id = users.id 
-                                        WHERE comments.post_id = ? 
+                                        WHERE comments.post_id = ? AND comments.is_deleted = 0
                                         ORDER BY comments.created_at ASC";
                                 $stmt = $conn->prepare($sql);
                                 $stmt->bind_param("i", $post['id']);
@@ -376,7 +378,7 @@ $result = $conn->query($sql);
                                                     </p>
                                                 <?php endif; ?>
                                                 <small>Posted on <?php echo date('Y-m-d H:i', strtotime($comment['created_at'])); ?></small>
-                                                <?php if ($_SESSION['user_id'] == $comment['user_id'] || $_SESSION['is_admin']): ?>
+                                                <?php if ($_SESSION['user_id'] == $comment['user_id'] || ($_SESSION['role'] === 'admin')): ?>
                                                     <form action="delete_comment.php" method="POST" style="display:inline;">
                                                         <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
                                                         <button type="submit" onclick="return confirm('Delete this comment?');">Delete</button>

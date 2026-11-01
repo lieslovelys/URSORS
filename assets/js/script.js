@@ -1,5 +1,5 @@
 // Handle form submission for creating new posts
-document.getElementById('postForm').addEventListener('submit', async (event) => {
+document.getElementById('postForm')?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
 
@@ -24,22 +24,27 @@ async function loadPosts() {
 
     if (result.status === 'success') {
         const newsFeed = document.getElementById('newsFeed');
-        newsFeed.innerHTML = '';
+        if (!newsFeed) return;
+        newsFeed.replaceChildren();
 
         result.posts.forEach(post => {
             const postElement = document.createElement('div');
             postElement.classList.add('post');
-            postElement.innerHTML = `
-                <p><strong>${post.username}</strong> <span>${new Date(post.created_at).toLocaleString()}</span></p>
-                <p>${post.content}</p>
-            `;
+            const author = document.createElement('strong');
+            author.textContent = post.username;
+            const date = document.createElement('span');
+            date.textContent = ' ' + new Date(post.created_at).toLocaleString();
+            const heading = document.createElement('p');
+            heading.append(author, date);
+            const content = document.createElement('p');
+            content.textContent = post.content;
+            postElement.append(heading, content);
             newsFeed.appendChild(postElement);
         });
     } else {
         alert(result.message || 'Failed to load posts');
     }
 }
-
 
 
 

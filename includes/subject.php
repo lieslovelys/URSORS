@@ -1,4 +1,8 @@
 <?php
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__) {
+    http_response_code(404);
+    exit;
+}
 $course = $_GET['course'] ?? '';
 $subject = $_GET['subject'] ?? '';
 $catalogue = dirname(__DIR__) . '/' . $course . '.html';

@@ -1,4 +1,8 @@
 <?php
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__) {
+    http_response_code(404);
+    exit;
+}
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 
 function fail_request(string $message, int $status = 400): never
@@ -18,6 +22,16 @@ function require_login(): void
         header('Location: /login.html');
         exit;
     }
+    global $conn;
+    $stmt = $conn->prepare('SELECT role, is_approved FROM users WHERE id = ?');
+    $stmt->bind_param('i', $_SESSION['user_id']);
+    $stmt->execute();
+    $user = $stmt->get_result()->fetch_assoc();
+    if (!$user || !$user['is_approved']) {
+        $_SESSION = [];
+        fail_request('Account is not approved.', 403);
+    }
+    $_SESSION['role'] = $user['role'];
 }
 function require_admin(): void
 {

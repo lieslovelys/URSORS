@@ -1,10 +1,12 @@
 <?php
-session_start();
-include 'config.php'; // Database connection file
+
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_login(); // Database connection file
 
 // Redirect to login if the user is not logged in
 if (!isset($_SESSION['username'])) {
-    header("Location: /Admin/FrontEnd/login.html");
+    header("Location: /login.html");
     exit;
 }
 
@@ -121,7 +123,7 @@ $selected_deep_sub_section = isset($_GET['deep_sub_section']) ? $_GET['deep_sub_
 // Fetch posts based on selected section, subsection, and nested subsection
 $where_clause = "posts.is_archived = 0"; // Exclude archived posts
 
-if (!empty($selected_section)) {
+if (!empty($selected_section) && $selected_section !== 'All') {
     $where_clause .= " AND posts.section = '" . $conn->real_escape_string($selected_section) . "'";
 }
 
@@ -156,7 +158,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <title>Feed | URS S.O.R.S</title>
-    <link rel="stylesheet" href="/Admin/FrontEnd/style.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
 
@@ -244,13 +246,13 @@ $result = $conn->query($sql);
             <strong>Current Location:</strong>
             Section: <?php echo htmlspecialchars($selected_section); ?> 
             <?php if (!empty($selected_sub_section)): ?>
-                > Subsection: <?php echo htmlspecialchars($selected_sub_section); ?>
+                > Subsection: <?php echo htmlspecialchars($selected_sub_section ?? ''); ?>
             <?php endif; ?>
             <?php if (!empty($selected_nested_sub_section)): ?>
-                > Nested Subsection: <?php echo htmlspecialchars($selected_nested_sub_section); ?>
+                > Nested Subsection: <?php echo htmlspecialchars($selected_nested_sub_section ?? ''); ?>
             <?php endif; ?>
             <?php if (!empty($selected_deep_sub_section)): ?>
-                > Deep Subsection: <?php echo htmlspecialchars($selected_deep_sub_section); ?>
+                > Deep Subsection: <?php echo htmlspecialchars($selected_deep_sub_section ?? ''); ?>
             <?php endif; ?>
         </p>
         
@@ -263,9 +265,9 @@ $result = $conn->query($sql);
                 
                 <!-- Automatically set section, sub_section, nested_sub_section, and deep_sub_section -->
                 <input type="hidden" name="section" value="<?php echo htmlspecialchars($selected_section); ?>">
-                <input type="hidden" name="sub_section" value="<?php echo htmlspecialchars($selected_sub_section); ?>">
-                <input type="hidden" name="nested_sub_section" value="<?php echo htmlspecialchars($selected_nested_sub_section); ?>">
-                <input type="hidden" name="deep_sub_section" value="<?php echo htmlspecialchars($selected_deep_sub_section); ?>">
+                <input type="hidden" name="sub_section" value="<?php echo htmlspecialchars($selected_sub_section ?? ''); ?>">
+                <input type="hidden" name="nested_sub_section" value="<?php echo htmlspecialchars($selected_nested_sub_section ?? ''); ?>">
+                <input type="hidden" name="deep_sub_section" value="<?php echo htmlspecialchars($selected_deep_sub_section ?? ''); ?>">
 
                 <label for="image">Upload an Image:</label>
                 <input type="file" name="image" id="image" accept="image/*"><br>
@@ -332,7 +334,7 @@ $result = $conn->query($sql);
                                 $sql = "SELECT comments.*, users.username 
                                         FROM comments 
                                         JOIN users ON comments.user_id = users.id 
-                                        WHERE comments.post_id = ? 
+                                        WHERE comments.post_id = ? AND comments.is_deleted = 0
                                         ORDER BY comments.created_at ASC";
                                 $stmt = $conn->prepare($sql);
                                 $stmt->bind_param("i", $post['id']);
@@ -354,7 +356,7 @@ $result = $conn->query($sql);
                                                     </p>
                                                 <?php endif; ?>
                                                 <small>Posted on <?php echo date('Y-m-d H:i', strtotime($comment['created_at'])); ?></small>
-                                                <?php if ($_SESSION['user_id'] == $comment['user_id'] || $_SESSION['is_admin']): ?>
+                                                <?php if ($_SESSION['user_id'] == $comment['user_id'] || ($_SESSION['role'] === 'admin')): ?>
                                                     <form action="delete_comment.php" method="POST" style="display:inline;">
                                                         <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
                                                         <button type="submit" onclick="return confirm('Delete this comment?');">Delete</button>

@@ -1,35 +1,16 @@
 <?php
-session_start();
-include 'config.php';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $comment_id = $_POST['comment_id'];
-    $user_id = $_SESSION['user_id'];
-    $is_admin = $_SESSION['is_admin'];
-
-    // Verify ownership or admin status
-    $sql = "SELECT user_id FROM comments WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $comment_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $comment = $result->fetch_assoc();
-
-    if ($comment && ($comment['user_id'] == $user_id || $is_admin)) {
-        // Delete the comment
-        $delete_sql = "DELETE FROM comments WHERE id = ?";
-        $delete_stmt = $conn->prepare($delete_sql);
-        $delete_stmt->bind_param("i", $comment_id);
-        if ($delete_stmt->execute()) {
-            header("Location: " . $_SERVER['HTTP_REFERER']); // Redirect back to the previous page
-            exit;
-        } else {
-            echo "Error deleting comment.";
-        }
-    } else {
-        echo "Unauthorized action.";
-    }
-} else {
-    echo "Invalid request.";
-}
-?>
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_login();
+require_post();
+$commentId = (int) ($_POST['comment_id'] ?? 0);
+$stmt = $conn->prepare('SELECT user_id FROM comments WHERE id = ? AND is_deleted = 0');
+$stmt->bind_param('i', $commentId);
+$stmt->execute();
+$comment = $stmt->get_result()->fetch_assoc();
+if (!$comment) fail_request('Comment not found.', 404);
+if ($comment['user_id'] != $_SESSION['user_id'] && $_SESSION['role'] !== 'admin') fail_request('Unauthorized action.', 403);
+$stmt = $conn->prepare('UPDATE comments SET is_deleted = 1 WHERE id = ?');
+$stmt->bind_param('i', $commentId);
+$stmt->execute();
+redirect_back();

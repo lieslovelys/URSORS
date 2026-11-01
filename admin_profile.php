@@ -1,17 +1,19 @@
 <?php
-include 'config.php'; // Database connection file
-session_start();
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_admin(); // Database connection file
+
 
 // Redirect to login if the user is not logged in
 if (!isset($_SESSION['username'])) {
-    header("Location: /Admin/FrontEnd/login.html");
+    header("Location: /login.html");
     exit;
 }
 
 $user_id = $_SESSION['user_id'];
 
 // Fetch user details
-$sql = "SELECT first_name, middle_name, last_name, username, role FROM users WHERE id = ?";
+$sql = "SELECT * FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -30,8 +32,8 @@ $sql = "SELECT COUNT(*) AS unread_count FROM notifications WHERE user_id = ? AND
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
-$result = $stmt->get_result();
-$notification_count = $result->fetch_assoc()['unread_count'];
+$notification_result = $stmt->get_result();
+$notification_count = $notification_result->fetch_assoc()['unread_count'];
 
 // Fetch posts from the database
 // Filter the archived posts
@@ -145,7 +147,7 @@ $selected_deep_sub_section = isset($_GET['deep_sub_section']) ? $_GET['deep_sub_
 // Fetch posts based on selected section, subsection, and nested subsection
 $where_clause = "posts.is_archived = 0"; // Exclude archived posts
 
-if (!empty($selected_section)) {
+if (!empty($selected_section) && $selected_section !== 'All') {
     $where_clause .= " AND posts.section = '" . $conn->real_escape_string($selected_section) . "'";
 }
 
@@ -179,11 +181,11 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <title><?php echo htmlspecialchars($_SESSION['username']); ?>'s Profile</title>
-    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link rel="icon" type="image/ico" href="/assets/images/title_icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="/Admin/FrontEnd/admin.css">
-    <link rel="stylesheet" href="/Admin/FrontEnd/profile.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <link rel="stylesheet" href="/assets/css/profile.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
     
     <style>
         body {
@@ -201,7 +203,7 @@ $result = $conn->query($sql);
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <a href="admin_home.php"><img src="/img/sors_logo.png" alt=""></a>
+                <a href="admin_home.php"><img src="/assets/images/sors_logo.png" alt=""></a>
             </div>
                 
                 <div class="nav-icons">
@@ -258,21 +260,21 @@ $result = $conn->query($sql);
     <!-- Profile Header with Cover Photo, Profile Picture, and Username -->
     <div class="profile-header">
         <div class="cover-photo">
-            <img src="uploads/<?php echo htmlspecialchars($_SESSION['cover_photo']); ?>" alt="Cover Photo" id="coverPhotoImg">
+            <img src="<?php echo htmlspecialchars(profile_image($user['cover_photo'], 'cover')); ?>" alt="Cover Photo" id="coverPhotoImg">
             <form action="upload_cover.php" method="POST" enctype="multipart/form-data">
                 <input type="file" name="cover_photo" accept="image/*" required>
                 <button type="submit">Update Cover Photo</button>
             </form>
         </div>
         <div class="profile-photo">
-            <img src="uploads/<?php echo htmlspecialchars($_SESSION['profile_picture']); ?>" alt="Profile Picture" id="profilePictureImg">
+            <img src="<?php echo htmlspecialchars(profile_image($user['profile_picture'], 'profile')); ?>" alt="Profile Picture" id="profilePictureImg">
             <form action="upload_profile.php" method="POST" enctype="multipart/form-data">
                 <input type="file" name="profile_picture" accept="image/*" required>
                 <button type="submit">Update Profile Picture</button>
             </form>
         </div>
         <div class="username">
-            <h2><?php echo ucfirst($user['first_name']) . " " . ucfirst($user['middle_name']) . " " . ucfirst($user['last_name']); ?></h2>
+            <h2><?php echo htmlspecialchars(ucfirst($user['first_name']) . " " . ucfirst($user['middle_name'] ?? '') . " " . ucfirst($user['last_name'])); ?></h2>
             <p><strong><?php echo ucfirst($_SESSION['username']); ?></strong></p>
             <p> <?php echo ucfirst($_SESSION['role']); ?></p>
         </div>
@@ -332,7 +334,7 @@ $result = $conn->query($sql);
                                 $sql = "SELECT comments.*, users.username 
                                         FROM comments 
                                         JOIN users ON comments.user_id = users.id 
-                                        WHERE comments.post_id = ? 
+                                        WHERE comments.post_id = ? AND comments.is_deleted = 0
                                         ORDER BY comments.created_at ASC";
                                 $stmt = $conn->prepare($sql);
                                 $stmt->bind_param("i", $post['id']);
@@ -354,7 +356,7 @@ $result = $conn->query($sql);
                                                     </p>
                                                 <?php endif; ?>
                                                 <small>Posted on <?php echo date('Y-m-d H:i', strtotime($comment['created_at'])); ?></small>
-                                                <?php if ($_SESSION['user_id'] == $comment['user_id'] || $_SESSION['is_admin']): ?>
+                                                <?php if ($_SESSION['user_id'] == $comment['user_id'] || ($_SESSION['role'] === 'admin')): ?>
                                                     <form action="delete_comment.php" method="POST" style="display:inline;">
                                                         <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
                                                         <button type="submit" onclick="return confirm('Delete this comment?');">Delete</button>

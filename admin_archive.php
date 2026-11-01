@@ -1,6 +1,8 @@
 <?php
-session_start();
-include 'config.php';
+
+require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/config.php';
+require_admin();
 
 $sql = "SELECT posts.*, users.username 
         FROM posts 
@@ -14,8 +16,8 @@ $sql = "SELECT COUNT(*) AS unread_count FROM notifications WHERE user_id = ? AND
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
-$result = $stmt->get_result();
-$notification_count = $result->fetch_assoc()['unread_count'];
+$notification_result = $stmt->get_result();
+$notification_count = $notification_result->fetch_assoc()['unread_count'];
 ?>
 
 <!DOCTYPE html>
@@ -24,9 +26,9 @@ $notification_count = $result->fetch_assoc()['unread_count'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archived Posts</title>
-    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link rel="icon" type="image/ico" href="/assets/images/title_icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="/Admin/FrontEnd/admin.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
 
     <style>
         .container{
@@ -41,7 +43,7 @@ $notification_count = $result->fetch_assoc()['unread_count'];
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <a href="admin_home.php"><img src="/img/sors_logo.png" alt=""></a>
+                <a href="admin_home.php"><img src="/assets/images/sors_logo.png" alt=""></a>
             </div>
                 
                 <div class="nav-icons">
