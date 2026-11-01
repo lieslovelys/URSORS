@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "/usr/bin/php8.3 -d display_errors=0 -d log_errors=1 -S 0.0.0.0:8000 router.php",
+    "dev": "/usr/bin/php8.3 -d display_errors=0 -d log_errors=1 -d upload_max_filesize=10M -d post_max_size=24M -S 0.0.0.0:8000 router.php",
     "test": "python3 scripts/check_project.py",
     "test:integration": "python3 scripts/smoke_test.py"
   },

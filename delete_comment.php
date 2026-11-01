@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/includes/bootstrap.php';
 require_login();
 require_post();
 $commentId = (int) ($_POST['comment_id'] ?? 0);
@@ -13,4 +12,5 @@ if ($comment['user_id'] != $_SESSION['user_id'] && $_SESSION['role'] !== 'admin'
 $stmt = $conn->prepare('UPDATE comments SET is_deleted = 1 WHERE id = ?');
 $stmt->bind_param('i', $commentId);
 $stmt->execute();
+flash('The comment was removed from the discussion.');
 redirect_back();

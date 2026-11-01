@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/includes/bootstrap.php';
 require_login();
 require_post();
 $postId = (int) ($_POST['post_id'] ?? 0);
@@ -17,5 +16,6 @@ $liked = $stmt->get_result()->num_rows > 0;
 $stmt = $conn->prepare($liked ? 'DELETE FROM likes WHERE post_id = ? AND user_id = ?' : 'INSERT INTO likes (post_id, user_id) VALUES (?, ?)');
 $stmt->bind_param('ii', $postId, $userId);
 $stmt->execute();
-if (!$liked && $post['user_id'] != $userId) notify_user($conn, (int) $post['user_id'], $_SESSION['username'] . ' liked your post.');
+if (!$liked && $post['user_id'] != $userId) notify_user($conn, (int) $post['user_id'], actor_name() . ' liked your post.', $postId);
+flash($liked ? 'Like removed.' : 'You liked this post.');
 redirect_back();

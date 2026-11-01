@@ -12,7 +12,7 @@ for path in php_files:
     result = subprocess.run(['/usr/bin/php8.3', '-l', str(path)], capture_output=True, text=True)
     if result.returncode:
         raise SystemExit(result.stdout + result.stderr)
-sources = list(ROOT.glob('*.php')) + list(ROOT.glob('*.html')) + list((ROOT / 'assets/css').glob('*.css'))
+sources = list(ROOT.glob('*.php')) + list((ROOT/'includes').rglob('*.php')) + list(ROOT.glob('*.html')) + list((ROOT / 'assets/css').glob('*.css'))
 links = 0
 for path in sources:
     text = path.read_text()
@@ -30,3 +30,9 @@ for path in sources:
         assert resolved.exists(), f'{path.relative_to(ROOT)}: missing {ref}'
         links += 1
 print(f'PASS: {len(php_files)} PHP files linted; {links} local links/assets resolved.')
+catalogue = __import__('json').loads((ROOT/'includes/catalogue.json').read_text())
+assert len(catalogue)==8 and sum(map(len,catalogue.values()))==89, 'A subject was lost from the catalogue.'
+assert 'csrf_token' in (ROOT/'includes/bootstrap.php').read_text(), 'Missing shared CSRF validation.'
+assert 'display_errors=0' in (ROOT/'package.json').read_text(), 'Development server must hide raw errors.'
+assert (ROOT/'assets/css/app.css').exists() and (ROOT/'assets/js/app.js').exists()
+print('PASS: 89 subjects preserved; shared CSRF validation and friendly-error server settings present.')

@@ -3,7 +3,11 @@ if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__) {
     http_response_code(404);
     exit;
 }
-if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    ini_set('session.use_strict_mode', '1');
+    session_set_cookie_params(['httponly'=>true, 'samesite'=>'Lax', 'secure'=>!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off']);
+    session_start();
+}
 
 function fail_request(string $message, int $status = 400): never
 {
@@ -39,8 +43,8 @@ function require_login(): void
     $stmt->execute();
     $user = $stmt->get_result()->fetch_assoc();
     if (!$user || !$user['is_approved']) {
-        $_SESSION = [];
-        fail_request('Account is not approved.', 403);
+        $_SESSION = ['csrf_token' => bin2hex(random_bytes(32))];
+        fail_request('Your account is not approved yet. Please contact your school admin before logging in again.', 403);
     }
     $_SESSION['role'] = $user['role'];
 }
@@ -58,7 +62,7 @@ function require_post(): void
 }
 function redirect_back(): never
 {
-    $referer = parse_url($_SERVER['HTTP_REFERER'] ?? '');
+    $referer = parse_url($_POST['_return'] ?? $_SERVER['HTTP_REFERER'] ?? '');
     $host = $_SERVER['HTTP_HOST'] ?? '';
     $path = $referer['path'] ?? '';
     $safe = $path !== '' && !str_starts_with($path, '//')
@@ -67,11 +71,16 @@ function redirect_back(): never
     header('Location: ' . ($safe ? $path . (isset($referer['query']) ? '?' . $referer['query'] : '') : '/' . feed_page()));
     exit;
 }
-function notify_user(mysqli $conn, int $userId, string $message): void
+function notify_user(mysqli $conn, int $userId, string $message, ?int $postId = null): void
 {
+    if ($postId) $message .= ' [post:' . $postId . ']';
     $stmt = $conn->prepare('INSERT INTO notifications (user_id, message) VALUES (?, ?)');
     $stmt->bind_param('is', $userId, $message);
     $stmt->execute();
+}
+function actor_name(): string
+{
+    return function_exists('current_user') && current_user() ? display_name(current_user()) : ($_SESSION['username'] ?? 'Someone');
 }
 function can_post(mysqli $conn): void
 {

@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/includes/bootstrap.php';
 require_login();
 require_post();
 if (!in_array($_SESSION['role'], ['teacher', 'admin'], true)) fail_request('Only teachers and admins can archive or restore posts.', 403);
@@ -16,5 +15,6 @@ $archived = $action === 'archive' ? 1 : 0;
 $stmt = $conn->prepare('UPDATE posts SET is_archived = ? WHERE id = ?');
 $stmt->bind_param('ii', $archived, $postId);
 $stmt->execute();
-notify_user($conn, (int) $post['user_id'], 'Your post was ' . ($archived ? 'archived.' : 'restored.'));
+notify_user($conn, (int) $post['user_id'], 'Your post was ' . ($archived ? 'archived.' : 'restored.'), $postId);
+flash($archived ? 'Post archived. It is hidden from the feed and can be restored later.' : 'Post restored. It is back in the feed.');
 redirect_back();

@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/includes/bootstrap.php';
 require_login();
 require_post();
 $postId = (int) ($_POST['post_id'] ?? 0);
@@ -16,5 +15,6 @@ $file = uploaded_file('comment_file', 'comments');
 $stmt = $conn->prepare('INSERT INTO comments (post_id, user_id, content, file_path) VALUES (?, ?, ?, ?)');
 $stmt->bind_param('iiss', $postId, $userId, $content, $file);
 $stmt->execute();
-if ($post['user_id'] != $userId) notify_user($conn, (int) $post['user_id'], $_SESSION['username'] . ' commented on your post.');
+if ($post['user_id'] != $userId) notify_user($conn, (int) $post['user_id'], actor_name() . ' commented on your post.', $postId);
+flash('Your comment was added.');
 redirect_back();
