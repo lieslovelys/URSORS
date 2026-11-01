@@ -46,12 +46,13 @@ Professor Only resources but cannot post there.
 
 ## Assets and supporting files
 
-`assets/css/` preserves all original styles: `admin.css` (admin navigation),
-`admin_dashboard.css` (older dashboard), `home_sections_style.css` (catalogue),
-`index.css` (original landing), `login.css`, `register.css`, `profile.css`,
-and `style.css` (feeds). `assets/images/` holds the original five PNG assets
-and fallback profile/cover SVGs. `assets/js/script.js` is the older JSON feed
-client. Inline navigation scripts remain with their existing pages.
+`assets/css/` holds active styles: `admin.css` (admin navigation),
+`home_sections_style.css` (catalogue), `login.css`, `register.css`,
+`profile.css`, and `style.css` (feeds). `assets/images/` holds the original
+five PNG assets and fallback profile/cover SVGs. The unreferenced
+`admin_dashboard.css` and `index.css` are preserved in `_unused/assets/css/`;
+the unreferenced older JSON feed client is `_unused/assets/js/script.js`.
+Inline navigation scripts remain with their existing pages.
 
 `includes/app.php` provides session, authorization, redirects, uploads and
 notification helpers. `includes/subject.php` maps catalogue subjects to feed
@@ -59,4 +60,8 @@ filters. `uploads/` contains generated runtime files, not committed to git.
 `Database/urs_sors.sql` is the original export, not a migration to run over a
 populated database. `package.json`/`pnpm-lock.yaml` support the dev command.
 The original distribution ZIP is preserved in `_unused/URS SORS.zip` rather
-than deleted. No application page was removed as unused.
+than deleted. No application page was removed as unused. `scripts/` holds
+non-mutating lint/link checks, opt-in data-retaining integration tests, and
+a CLI-only password setter. `docs/` contains this map, the repair summary,
+and the latest integration request log. `Database/migrations/` contains the
+non-destructive schema adjustment.
