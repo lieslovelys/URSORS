@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | URS S.O.R.S</title>
+    <link rel="icon" type="image/ico" href="/img/title_icon.png">
+    <link rel="stylesheet" href="register.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="register.html"><img class="" src="/img/sors_logo.png" alt=""></a>
+            </div>
+            
+        </div>
+
+    </nav>
+    
+    
+    
+    
+
+    <div class="container">
+        <h2>REGISTER</h2>
+        <form action="/Admin/BackEnd/register.php" method="POST">
+            <input type="text" name="first_name" placeholder="First Name" required>
+            <input type="text" name="middle_name" placeholder="Middle Name (Optional)">
+            <input type="text" name="last_name" placeholder="Last Name" required>
+            <input type="text" name="email" placeholder="Email" required>
+            <input type="text" name="username" placeholder="Student No." required>
+            <input type="password" name="password" placeholder="Password" required>
+            <select class="selection" name="role" required>
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+            </select>
+            <button type="submit">Register</button>
+            <a href="login.html">Back to Login</a>
+        </form>
+    </div>
+</body>
+</html>
